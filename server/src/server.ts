@@ -27,7 +27,7 @@ export class ExpressServer {
 
   constructor(port: number) {
     this.app = express()
-    this.app.use(logger)
+    this.app.use(logger) // Middleware to log http requests
     this.app.use(express.json()) // Middleware to parse JSON bodies
     this.app.use(express.urlencoded({ extended: true })) // Middleware to parse URL-encoded bodies
     this.port = port
@@ -75,7 +75,7 @@ export class ExpressServer {
    */
   public start(): void {
     this.server.listen(this.port, () => {
-      console.log(`Server is running on http://localhost:${this.port}`)
+      console.log(`Express Server is running on http://localhost:${this.port}`)
     })
   }
 

@@ -54,27 +54,27 @@ export class OPCUAClientWrapper extends EventEmitter {
    * ```
    */
   public async connect() {
-    const spinner = ora("OPC sunucusuna bağlanılıyor...").start()
+    const spinner = ora("Connecting to OPC server...").start()
     try {
-      spinner.text = "OPC sunucusuna bağlanılıyor...\n" + "Bağlantı noktası: " + this.endpointUrl
+      spinner.text = "Connecting to OPC server...\n" + "Endpoint: " + this.endpointUrl
 
-      // Bağlantı kur
+      // Establish connection
       await this.client.connect(this.endpointUrl)
-      spinner.succeed("Bağlantı başarılı.\n" + this.endpointUrl)
+      spinner.succeed("Connection successful.\n" + this.endpointUrl)
 
-      // Oturum oluştur
+      // Create session
       this.session = await this.client.createSession()
-      spinner.succeed("Oturum başarıyla oluşturuldu.")
+      spinner.succeed("Session successfully created.")
 
-      // OPC UA istemcisinde bir abonelik oluşturmak için createSubscription2 yöntemini çağırıyoruz.
-      // Bu yöntem, belirli parametrelerle bir abonelik oluşturur ve bu abonelik, belirli bir yayınlama aralığında sunucudan veri değişikliklerini almak için kullanılır.
+      // We call the createSubscription2 method to create a subscription in the OPC UA client.
+      // This method creates a subscription with specific parameters, and this subscription is used to receive data changes from the server at a specific publishing interval.
       this.subscription = await this.session.createSubscription2({
-        requestedPublishingInterval: 1000, // ms cinsinden yayınlama aralığı
-        requestedLifetimeCount: 100, // 100 yayınlama döngüsü
-        requestedMaxKeepAliveCount: 10, // Aboneliğin maksimum keep-alive sayısı. Bu, sunucunun istemciye veri göndermediği durumda kaç döngü boyunca keep-alive mesajları göndereceğini belirtir.
-        maxNotificationsPerPublish: 100, //  Her yayınlama döngüsünde maksimum bildirim sayısı. Bu, bir yayınlama döngüsünde gönderilebilecek maksimum bildirim sayısını sınırlar.
-        publishingEnabled: true, // Aboneliğin yayınlama etkinliğini belirler. true: Abonelik yayınlama etkinliğine sahiptir.
-        priority: 10, // sunucunun birden fazla abonelik arasında önceliklendirme yapmasına yardımcı olur.
+        requestedPublishingInterval: 1000, // Publishing interval in ms
+        requestedLifetimeCount: 100, // 100 publishing cycles
+        requestedMaxKeepAliveCount: 10, // Maximum keep-alive count for the subscription. This specifies how many cycles the server will send keep-alive messages if no data is sent to the client.
+        maxNotificationsPerPublish: 100, // Maximum number of notifications per publishing cycle. This limits the maximum number of notifications that can be sent in a publishing cycle.
+        publishingEnabled: true, // Determines whether the subscription is publishing enabled. true: The subscription has publishing enabled.
+        priority: 10, // Helps the server prioritize among multiple subscriptions.
       })
 
       this.subscription
@@ -105,14 +105,14 @@ export class OPCUAClientWrapper extends EventEmitter {
     if (!this.subscription) throw new Error("Subscription is not initialized.")
 
     const itemToMonitor: ReadValueIdOptions = {
-      nodeId: nodeId, // İzlenecek öğenin benzersiz kimliği. Bu kimlik, OPC UA sunucusundaki belirli bir düğümü (node) temsil eder.
-      attributeId: AttributeIds.Value, // İzlenecek öğenin hangi özniteliğinin izleneceğini belirler. Bu, öğenin değer özniteliğinin izleneceğini belirtir.
+      nodeId: nodeId, // The unique identifier of the item to be monitored. This identifier represents a specific node in the OPC UA server.
+      attributeId: AttributeIds.Value, // Specifies which attribute of the item to monitor. This indicates that the value attribute of the item will be monitored.
     }
 
     const requestedParameters: MonitoringParametersOptions = {
-      samplingInterval: 100, // Örnekleme aralığını milisaniye cinsinden belirler. Bu örnekte, 100 milisaniye olarak ayarlanmıştır.
-      discardOldest: true, // Kuyruk dolduğunda en eski öğelerin atılıp atılmayacağını belirler. true: Kuyruk dolduğunda en eski öğeler atılacaktır.
-      queueSize: 100, // Kuyruğun maksimum boyutunu belirler. Bu örnekte, kuyruk boyutu 100 olarak ayarlanmıştır.
+      samplingInterval: 100, // Specifies the sampling interval in milliseconds. In this example, it is set to 100 milliseconds.
+      discardOldest: true, // Determines whether the oldest items should be discarded when the queue is full. true: The oldest items will be discarded when the queue is full.
+      queueSize: 100, // Specifies the maximum size of the queue. In this example, the queue size is set to 100.
     }
 
     const monitoredItem = await this.subscription.monitor(itemToMonitor, requestedParameters, TimestampsToReturn.Both)
@@ -127,8 +127,8 @@ export class OPCUAClientWrapper extends EventEmitter {
   // #region Disconnect method
   /** Disconnects the OPC UA client and closes the session if it exists.
    * This method performs the following steps:
-   * 1. If a session is active, it closes the session and logs "Oturum kapatıldı."
-   * 2. Disconnects the OPC UA client and logs "Bağlantı başarıyla kesildi."
+   * 1. If a session is active, it closes the session and logs "Session closed."
+   * 2. Disconnects the OPC UA client and logs "Successfully disconnected."
    * 3. Emits the `OPCUAEvents.Disconnected` event.
    *
    * @returns {Promise<void>} A promise that resolves when the client is disconnected.
