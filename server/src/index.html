@@ -18,6 +18,7 @@
       })
 
       socket.on("temperature", (data) => {
+        console.log("Received temperature data:", data)
         const messagesDiv = document.getElementById("messages")
         const newMessage = document.createElement("p")
         newMessage.textContent = `Event: customEvent, Data: ${JSON.stringify(data, null, 2)}`

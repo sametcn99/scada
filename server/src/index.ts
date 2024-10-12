@@ -1,11 +1,14 @@
-import { OPCUAClientWrapper } from "./runtime/opcua"
+import { OPCUAClientWrapper } from "./runtime/opcua.runtime";
 import { ExpressServer } from "./server"
 
 const expressServer = new ExpressServer(4020)
 
 // Set the endpoint URL for the OPC UA server
+// const endpointUrl = "opc.tcp://localhost:51210/Matrikon.OPC.Simulation.1"
+// const endpointUrl = "opc.tcp://localhost:51210/opcserversim.instance.1"
 const endpointUrl = "opc.tcp://opcuademo.sterfive.com:26543/UA/SampleServer"
 const opcuaClientWrapper = new OPCUAClientWrapper(endpointUrl)
+
 // Connect to the OPC UA server
 ;(async () => {
   try {

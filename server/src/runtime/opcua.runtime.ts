@@ -21,6 +21,16 @@ export class OPCUAClientWrapper extends EventEmitter {
   private session: ClientSession | undefined
   private subscription: ClientSubscription | undefined
 
+  constructor(endpointUrl: string) {
+    super() // Call the parent class constructor
+    this.client = OPCUAClient.create({
+      securityMode: MessageSecurityMode.None,
+      securityPolicy: SecurityPolicy.None,
+      endpointMustExist: false,
+    })
+    this.endpointUrl = endpointUrl
+  }
+
   // #region EventEmitter methods override for type safety and better intellisense
   emit<K extends keyof Events>(eventName: K, payload?: Events[K]): boolean {
     return super.emit(eventName, payload)
@@ -29,16 +39,6 @@ export class OPCUAClientWrapper extends EventEmitter {
     return super.on(eventName, listener)
   }
   // #endregion
-
-  constructor(endpointUrl: string) {
-    super()
-    this.client = OPCUAClient.create({
-      securityMode: MessageSecurityMode.None,
-      securityPolicy: SecurityPolicy.None,
-      endpointMustExist: false,
-    })
-    this.endpointUrl = endpointUrl
-  }
 
   // #region Connect method
   /** Establishes a connection to the Matrikon OPC server, creates a session, and sets up a subscription.
