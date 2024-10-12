@@ -1,4 +1,4 @@
-import { OPCUAClientWrapper } from "./runtime/opcua.runtime";
+import { OPCUAClientWrapper } from "./runtime/opcua"
 import { ExpressServer } from "./server"
 
 const expressServer = new ExpressServer(4020)

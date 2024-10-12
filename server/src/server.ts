@@ -5,7 +5,7 @@ import http, { Server as HttpServer } from "http"
 import { join } from "path"
 import { Server as SocketIOServer } from "socket.io"
 import logger from "./middlewares/logger"
-import { socketLogger } from "./middlewares/socket.logger"
+import { socketLogger } from "./middlewares/socket-logger"
 
 /**
  * ExpressServer class sets up and manages an Express application with integrated Socket.IO server.
