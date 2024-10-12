@@ -1,4 +1,3 @@
-import { OPCUAEvents } from "./events/opcua.events"
 import { OPCUAClientWrapper } from "./runtime/opcua"
 
 // const endpointUrl = "opc.tcp://localhost:51210/Matrikon.OPC.Simulation.1"
@@ -10,19 +9,18 @@ const opcuaClientWrapper = new OPCUAClientWrapper(endpointUrl)
   await opcuaClientWrapper.connect()
 })()
 
-opcuaClientWrapper.on(OPCUAEvents.Connected, async () => {
-  console.log("Client is connected.")
+opcuaClientWrapper.on("Connected", async () => {
   await opcuaClientWrapper.monitorItem("ns=1;s=Temperature")
 })
 
-opcuaClientWrapper.on(OPCUAEvents.DataChanged, (value) => {
+opcuaClientWrapper.on("DataChanged", (value) => {
   console.log("Data changed: ", value)
 })
 
-opcuaClientWrapper.on(OPCUAEvents.Disconnected, () => {
+opcuaClientWrapper.on("Disconnected", () => {
   console.log("Client is disconnected.")
 })
 
-opcuaClientWrapper.on(OPCUAEvents.Error, (err) => {
+opcuaClientWrapper.on("Error", (err) => {
   console.error("Error: ", err)
 })
