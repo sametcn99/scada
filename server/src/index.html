@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>WebSocket Example</title>
+    <script src="https://cdn.socket.io/4.0.0/socket.io.min.js"></script>
+  </head>
+  <body>
+    <h1>WebSocket Messages</h1>
+    <div id="messages"></div>
+
+    <script>
+      const socket = io("http://localhost:4020")
+
+      socket.on("connect", () => {
+        console.log("Connected to WebSocket server.")
+      })
+
+      socket.on("temperature", (data) => {
+        const messagesDiv = document.getElementById("messages")
+        const newMessage = document.createElement("p")
+        newMessage.textContent = `Event: customEvent, Data: ${JSON.stringify(data, null, 2)}`
+        messagesDiv.appendChild(newMessage)
+      })
+
+      socket.on("disconnect", function () {
+        console.log("Disconnected from WebSocket server.")
+      })
+    </script>
+  </body>
+</html>

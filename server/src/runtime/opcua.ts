@@ -1,16 +1,6 @@
 import { EventEmitter } from "events"
-import {
-  AttributeIds,
-  DataValue,
-  MessageSecurityMode,
-  OPCUAClient,
-  SecurityPolicy,
-  TimestampsToReturn,
-  type ClientSession,
-  type ClientSubscription,
-  type MonitoringParametersOptions,
-  type ReadValueIdOptions,
-} from "node-opcua"
+import type { ClientSession, ClientSubscription, MonitoringParametersOptions, ReadValueIdOptions } from "node-opcua"
+import { AttributeIds, DataValue, MessageSecurityMode, OPCUAClient, SecurityPolicy, TimestampsToReturn } from "node-opcua"
 import ora from "ora"
 
 /**
@@ -83,7 +73,7 @@ export class OPCUAClientWrapper extends EventEmitter {
         requestedLifetimeCount: 100, // 100 yayınlama döngüsü
         requestedMaxKeepAliveCount: 10, // Aboneliğin maksimum keep-alive sayısı. Bu, sunucunun istemciye veri göndermediği durumda kaç döngü boyunca keep-alive mesajları göndereceğini belirtir.
         maxNotificationsPerPublish: 100, //  Her yayınlama döngüsünde maksimum bildirim sayısı. Bu, bir yayınlama döngüsünde gönderilebilecek maksimum bildirim sayısını sınırlar.
-        publishingEnabled: true,
+        publishingEnabled: true, // Aboneliğin yayınlama etkinliğini belirler. true: Abonelik yayınlama etkinliğine sahiptir.
         priority: 10, // sunucunun birden fazla abonelik arasında önceliklendirme yapmasına yardımcı olur.
       })
 
