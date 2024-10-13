@@ -36,7 +36,7 @@ export class ExpressServer {
     //#region Setup socket
     this.io = new SocketIOServer(this.server, {
       cors: {
-        origin: ["https://admin.socket.io"],
+        origin: ["https://admin.socket.io", "http://localhost:5173"],
         credentials: true,
       },
     })
