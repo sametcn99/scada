@@ -86,7 +86,7 @@ export class ExpressServer {
    * @param data - The data to send with the event.
    * @returns void
    */
-  public emitEvent(event: string, data: any): void {
+  public emitEvent<T>(event: string, data: T): void {
     this.io.emit(event, data)
   }
 }
