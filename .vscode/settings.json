@@ -1,1 +1,7 @@
-{}
+{
+  "files.exclude": {
+    "client/dist": true,
+    "client/node_modules": true,
+    "server/node_modules": true
+  }
+}
