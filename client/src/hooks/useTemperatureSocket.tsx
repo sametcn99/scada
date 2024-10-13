@@ -14,7 +14,7 @@ export const useTemperatureSocket = () => {
       const value = parseFloat(newData.match(/value:\s([\d.]+)/)?.[1] || "0")
       setData((prevData) => {
         const updatedData = [...prevData, value]
-        // Keep only the last 20 elements
+        // Keep only the last 25 elements
         return updatedData.slice(-25)
       })
     })

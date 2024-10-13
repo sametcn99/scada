@@ -1,13 +1,9 @@
 import { CChart } from "@coreui/react-chartjs"
 import { useTemperatureSocket } from "../hooks/useTemperatureSocket"
+import { getAverage } from "../utils/utils"
 
-export default function Chart() {
+export default function TemperatureChart() {
   const { data, error } = useTemperatureSocket()
-
-  // Calculate average temperature
-  const averageTemperature = data.length ? (data.reduce((sum, value) => sum + value, 0) / data.length).toFixed(2) : "N/A"
-
-  // Get current temperature
   const currentTemperature = data.length ? data[data.length - 1] : "N/A"
 
   return (
@@ -41,7 +37,7 @@ export default function Chart() {
 
       {/* Display average and current temperature */}
       <div className="text-white">
-        <p>Average Temperature: {averageTemperature}°C</p>
+        <p>Average Temperature: {getAverage(data)}°C</p>
         <p>Current Temperature: {Number(currentTemperature).toFixed(2)}°C</p>
       </div>
     </div>
