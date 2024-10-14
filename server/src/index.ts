@@ -1,14 +1,41 @@
 import { OPCUAClientWrapper } from "./runtime/opcua"
 import { ExpressServer } from "./server"
+import inquirer from "inquirer"
 
 const expressServer = new ExpressServer(4020)
 
-// Set the endpoint URL for the OPC UA server
-// const endpointUrl = "opc.tcp://localhost:51210/Matrikon.OPC.Simulation.1"
-// const endpointUrl = "opc.tcp://localhost/Matrikon.OPC.Simulation.1"
-// const endpointUrl = "opc.tcp://localhost:51210/opcserversim.instance.1"
-// const endpointUrl = "opc.tcp://sametc:21381/MatrikonOpcUaWrapper"
-const endpointUrl = "opc.tcp://opcuademo.sterfive.com:26543/UA/SampleServer"
+const predefinedEndpoints = [
+  "opc.tcp://SAMETC:26543/Matrikon.OPC.Simulation.1",
+  "opc.tcp://SAMETC:26543/opcserversim.instance.1",
+  "opc.tcp://SAMETC:26543",
+  "opc.tcp://opcuademo.sterfive.com:26543/UA/SampleServer",
+]
+
+const answers = await inquirer.prompt([
+  {
+    type: "list",
+    name: "endpoint",
+    message: "Select an OPC UA server endpoint or enter a custom one:",
+    choices: [...predefinedEndpoints, "Custom"],
+  },
+  {
+    type: "input",
+    name: "customEndpoint",
+    message: "Enter your custom endpoint:",
+    when: (answers) => answers.endpoint === "Custom",
+    validate: (input) => {
+      const urlPattern = /^(opc\.tcp:\/\/[^\s]+(:\d+)?\/[^\s]*)$/
+      if (urlPattern.test(input)) {
+        return true
+      } else {
+        return "Please enter a valid OPC UA endpoint URL (e.g., opc.tcp://hostname:port/path)."
+      }
+    },
+  },
+])
+
+const endpointUrl = answers.endpoint === "Custom" ? answers.customEndpoint : answers.endpoint
+
 const opcuaClientWrapper = new OPCUAClientWrapper(endpointUrl)
 
 // Connect to the OPC UA server
