@@ -2,6 +2,8 @@ import { EventEmitter } from "events"
 import type { ClientSession, ClientSubscription, MonitoringParametersOptions, ReadValueIdOptions } from "node-opcua"
 import { AttributeIds, DataValue, MessageSecurityMode, OPCUAClient, SecurityPolicy, TimestampsToReturn } from "node-opcua"
 import ora from "ora"
+import { withTimeout } from "../utils"
+import { logAppEvents } from "../utils/logger"
 
 /**
  * A wrapper class for OPC UA Client that extends EventEmitter.
@@ -20,13 +22,15 @@ export class OPCUAClientWrapper extends EventEmitter {
   private endpointUrl: string
   private session: ClientSession | undefined
   private subscription: ClientSubscription | undefined
+  private reconnectInterval = 5000
 
   constructor(endpointUrl: string) {
     super() // Call the parent class constructor
     this.client = OPCUAClient.create({
       securityMode: MessageSecurityMode.None,
       securityPolicy: SecurityPolicy.None,
-      endpointMustExist: false,
+      endpointMustExist: false, // Determines whether the endpoint must exist in the LDS
+      keepSessionAlive: true,
     })
     this.endpointUrl = endpointUrl
   }
@@ -59,7 +63,11 @@ export class OPCUAClientWrapper extends EventEmitter {
       spinner.text = "Connecting to OPC server...\n" + "Endpoint: " + this.endpointUrl
 
       // Establish connection
-      await this.client.connect(this.endpointUrl)
+      const isConnected = await withTimeout(() => this.client.connect(this.endpointUrl), 3000)
+      if (!isConnected) {
+        spinner.fail("Connection failed or timed out." + this.endpointUrl)
+        process.exit(1)
+      }
       spinner.succeed("Connection successful.\n" + this.endpointUrl)
 
       // Create session
@@ -70,23 +78,26 @@ export class OPCUAClientWrapper extends EventEmitter {
       // This method creates a subscription with specific parameters, and this subscription is used to receive data changes from the server at a specific publishing interval.
       this.subscription = await this.session.createSubscription2({
         requestedPublishingInterval: 1000, // Publishing interval in ms
-        requestedLifetimeCount: 100, // 100 publishing cycles
-        requestedMaxKeepAliveCount: 10, // Maximum keep-alive count for the subscription. This specifies how many cycles the server will send keep-alive messages if no data is sent to the client.
-        maxNotificationsPerPublish: 100, // Maximum number of notifications per publishing cycle. This limits the maximum number of notifications that can be sent in a publishing cycle.
-        publishingEnabled: true, // Determines whether the subscription is publishing enabled. true: The subscription has publishing enabled.
-        priority: 10, // Helps the server prioritize among multiple subscriptions.
+        requestedLifetimeCount: 120, // Reasonable lifetime count
+        requestedMaxKeepAliveCount: 20, // Reasonable keep-alive count
+        maxNotificationsPerPublish: 100, // Maximum number of notifications per publishing cycle
+        publishingEnabled: true, // Determines whether the subscription is publishing enabled
+        priority: 10, // Helps the server prioritize among multiple subscriptions
       })
 
-      this.subscription
-        .on("keepalive", () => {
-          console.log("keepalive")
-        })
-        .on("terminated", () => {
-          console.log("TERMINATED ------------------------------>")
-        })
+      this.subscription.on("started", () => {
+        console.log("Subscription started")
+      })
+      this.subscription.on("keepalive", () => {
+        console.log("keepalive")
+      })
+      this.subscription.on("terminated", () => {
+        console.log("TERMINATED ------------------------------>")
+      })
 
       this.emit("Connected")
     } catch (err) {
+      logAppEvents(err as Error)
       await this.client.disconnect()
       this.emit("Error", err as Error)
     }
@@ -136,7 +147,25 @@ export class OPCUAClientWrapper extends EventEmitter {
   public async disconnect() {
     if (this.session) await this.session.close()
     await this.client.disconnect()
+    logAppEvents("Successfully disconnected.")
     this.emit("Disconnected")
+  }
+  // #endregion
+
+  // #region Reconnect method
+  /** Attempts to reconnect to the OPC UA server after a disconnection.
+   * This method will keep trying to reconnect at a specified interval until successful.
+   */
+  private async reconnect() {
+    logAppEvents(`Attempting to reconnect in ${this.reconnectInterval / 1000} seconds...`)
+    setTimeout(async () => {
+      try {
+        await this.connect()
+      } catch (err) {
+        logAppEvents("Reconnection attempt failed: " + err)
+        this.reconnect() // Retry reconnection if it fails
+      }
+    }, this.reconnectInterval)
   }
   // #endregion
 }

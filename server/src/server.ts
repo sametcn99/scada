@@ -2,10 +2,9 @@ import { instrument } from "@socket.io/admin-ui"
 import type { Application, Request, Response } from "express"
 import express from "express"
 import http, { Server as HttpServer } from "http"
-import { join } from "path"
 import { Server as SocketIOServer } from "socket.io"
-import logger from "./middlewares/logger"
-import { socketLogger } from "./middlewares/socket-logger"
+import { socketLogger, expressLogger } from "./middlewares"
+import { logAppEvents } from "./utils/logger"
 
 /**
  * ExpressServer class sets up and manages an Express application with integrated Socket.IO server.
@@ -27,7 +26,7 @@ export class ExpressServer {
 
   constructor(port: number) {
     this.app = express()
-    this.app.use(logger) // Middleware to log http requests
+    this.app.use(expressLogger) // Middleware to log http requests
     this.app.use(express.json()) // Middleware to parse JSON bodies
     this.app.use(express.urlencoded({ extended: true })) // Middleware to parse URL-encoded bodies
     this.port = port
@@ -61,8 +60,7 @@ export class ExpressServer {
    */
   private setupRoutes(): void {
     this.app.get("/", (req: Request, res: Response) => {
-      const htmlPath = join(__dirname, "index.html")
-      res.sendFile(htmlPath)
+      res.json({ message: "Hello, World!" })
     })
   }
 
@@ -75,7 +73,7 @@ export class ExpressServer {
    */
   public start(): void {
     this.server.listen(this.port, () => {
-      console.log(`Express Server is running on http://localhost:${this.port}`)
+      logAppEvents(`Express Server is running on http://localhost:${this.port}`)
     })
   }
 
