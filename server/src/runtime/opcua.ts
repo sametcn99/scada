@@ -1,6 +1,6 @@
 import { EventEmitter } from "events"
 import type { ClientSession, ClientSubscription, MonitoringParametersOptions, ReadValueIdOptions } from "node-opcua"
-import { AttributeIds, DataValue, MessageSecurityMode, OPCUAClient, SecurityPolicy, TimestampsToReturn } from "node-opcua"
+import { AttributeIds, DataValue, MessageSecurityMode, NodeId, OPCUAClient, SecurityPolicy, TimestampsToReturn } from "node-opcua"
 import ora from "ora"
 import { withTimeout } from "../utils"
 import { logAppEvents } from "../utils/logger"
@@ -68,11 +68,11 @@ export class OPCUAClientWrapper extends EventEmitter {
         spinner.fail("Connection failed or timed out." + this.endpointUrl)
         process.exit(1)
       }
-      spinner.succeed("Connection successful.\n" + this.endpointUrl)
+      spinner.succeed("Connection successful.\n" + this.client)
 
       // Create session
       this.session = await this.client.createSession()
-      spinner.succeed("Session successfully created.")
+      spinner.succeed("Session successfully created." + this.session)
 
       // We call the createSubscription2 method to create a subscription in the OPC UA client.
       // This method creates a subscription with specific parameters, and this subscription is used to receive data changes from the server at a specific publishing interval.
@@ -112,7 +112,7 @@ export class OPCUAClientWrapper extends EventEmitter {
    * The method sets up monitoring parameters and listens for changes in the item's value.
    * When a change is detected, it emits an `OPCUAEvents.DataChanged` event with the new value.
    */
-  public async monitorItem(nodeId: string) {
+  public async monitorItem(nodeId: NodeId) {
     if (!this.subscription) throw new Error("Subscription is not initialized.")
 
     const itemToMonitor: ReadValueIdOptions = {

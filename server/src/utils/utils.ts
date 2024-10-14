@@ -34,3 +34,11 @@ export function getFormattedDate(): string {
   // YYYY-MM-DD_HH-mm-ss
   return `${year}-${month}-${day}_${hours}-${minutes}-${seconds}`
 }
+
+export const getAppEnvironment = (): string => {
+  const env = process.env.NODE_ENV
+  if (!env) {
+    throw new Error(`NODE_ENV is undefined. Please set the environment variable.`)
+  }
+  return env
+}
