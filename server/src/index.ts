@@ -29,5 +29,5 @@ opcuaClientWrapper.on('Connected', async () => {
 })
 
 opcuaClientWrapper.on('DataChanged', (value) => {
-  expressServer.emitEvent('temperature', value)
+  expressServer.emitEvent('Temperature', value)
 })

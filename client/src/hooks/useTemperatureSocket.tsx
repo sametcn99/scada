@@ -33,7 +33,7 @@ export const useTemperatureSocket = () => {
   useEffect(() => {
     const socket: Socket = io(SOCKET_URL)
 
-    socket.on('temperature', handleNewTemperatureData)
+    socket.on('Temperature', handleNewTemperatureData)
     socket.on('connect_error', handleConnectionError)
     return () => {
       socket.disconnect()
