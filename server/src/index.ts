@@ -4,11 +4,14 @@ import { ExpressServer } from './server'
 import { getAppEnvironment, getSelectedEndpoint } from './utils'
 import { logAppEvents } from './utils/logger'
 
-logAppEvents(`Application is started in ${getAppEnvironment()} environment`)
+logAppEvents(
+  'Message',
+  `Application is started in ${getAppEnvironment()} environment`
+)
 const expressServer = new ExpressServer(4020)
 
 const endpointURL = await getSelectedEndpoint()
-logAppEvents(`Selected endpoint: ${endpointURL}`)
+logAppEvents('Message', `Selected endpoint: ${endpointURL}`)
 
 const opcuaClientWrapper = new OPCUAClientWrapper(endpointURL)
 
@@ -18,7 +21,7 @@ const opcuaClientWrapper = new OPCUAClientWrapper(endpointURL)
     await opcuaClientWrapper.connect()
     expressServer.start()
   } catch (error) {
-    logAppEvents(error as Error)
+    logAppEvents('Message', error as Error)
   }
 })()
 

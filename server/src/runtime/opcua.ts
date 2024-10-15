@@ -89,12 +89,12 @@ export class OPCUAClientWrapper extends EventEmitter {
         process.exit(1)
       }
       spinner.succeed('Connection successful.\n' + this.client)
-      logAppEvents(`${this.client}`, false)
+      logAppEvents('Info', `${this.client}`, false)
 
       // Create session
       this.session = await this.client.createSession()
       spinner.succeed('Session successfully created.' + this.session)
-      logAppEvents(`${this.session}`, false)
+      logAppEvents('Info', `${this.session}`, false)
 
       // We call the createSubscription2 method to create a subscription in the OPC UA client.
       // This method creates a subscription with specific parameters, and this subscription is used to receive data changes from the server at a specific publishing interval.
@@ -119,7 +119,7 @@ export class OPCUAClientWrapper extends EventEmitter {
 
       this.emit('Connected')
     } catch (err) {
-      logAppEvents(err as Error)
+      logAppEvents('Error', err as Error)
       await this.client.disconnect()
       this.emit('Error', err as Error)
     }
@@ -173,7 +173,7 @@ export class OPCUAClientWrapper extends EventEmitter {
   public async disconnect() {
     if (this.session) await this.session.close()
     await this.client.disconnect()
-    logAppEvents('Successfully disconnected.')
+    logAppEvents('Message', 'Successfully disconnected.')
     this.emit('Disconnected')
   }
   // #endregion
@@ -184,13 +184,14 @@ export class OPCUAClientWrapper extends EventEmitter {
    */
   private async reconnect() {
     logAppEvents(
+      'Message',
       `Attempting to reconnect in ${this.reconnectInterval / 1000} seconds...`
     )
     setTimeout(async () => {
       try {
         await this.connect()
       } catch (err) {
-        logAppEvents('Reconnection attempt failed: ' + err)
+        logAppEvents('Error', 'Reconnection attempt failed: ' + err)
         this.reconnect() // Retry reconnection if it fails
       }
     }, this.reconnectInterval)

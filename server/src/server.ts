@@ -73,7 +73,10 @@ export class ExpressServer {
    */
   public start(): void {
     this.server.listen(this.port, () => {
-      logAppEvents(`Express Server is running on http://localhost:${this.port}`)
+      logAppEvents(
+        'Message',
+        `Express Server is running on http://localhost:${this.port}`
+      )
     })
   }
 

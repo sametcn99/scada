@@ -20,7 +20,7 @@ export const expressLogger = (
   // Listen for the response to finish
   res.on('finish', () => {
     const duration = Date.now() - start
-    logAppEvents(`${method} ${url} - ${userAgent} - ${duration}ms`)
+    logAppEvents('Message', `${method} ${url} - ${userAgent} - ${duration}ms`)
   })
 
   // Call the next middleware function in the stack

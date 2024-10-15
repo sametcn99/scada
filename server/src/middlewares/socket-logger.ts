@@ -20,14 +20,14 @@ import { logAppEvents } from '../utils/logger'
  */
 export const socketLogger = (io: Server) => {
   io.on('connection', (socket) => {
-    logAppEvents(`A user connected: ${socket.id}`)
+    logAppEvents('Message', `A user connected: ${socket.id}`)
 
     socket.on('disconnect', () => {
-      logAppEvents(`User disconnected: ${socket.id}`)
+      logAppEvents('Message', `User disconnected: ${socket.id}`)
     })
 
     socket.on('error', (err) => {
-      logAppEvents(err as Error)
+      logAppEvents('Error', err as Error)
     })
   })
 }
