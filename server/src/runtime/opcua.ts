@@ -89,10 +89,12 @@ export class OPCUAClientWrapper extends EventEmitter {
         process.exit(1)
       }
       spinner.succeed('Connection successful.\n' + this.client)
+      logAppEvents(`${this.client}`, false)
 
       // Create session
       this.session = await this.client.createSession()
       spinner.succeed('Session successfully created.' + this.session)
+      logAppEvents(`${this.session}`, false)
 
       // We call the createSubscription2 method to create a subscription in the OPC UA client.
       // This method creates a subscription with specific parameters, and this subscription is used to receive data changes from the server at a specific publishing interval.

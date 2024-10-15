@@ -1,5 +1,6 @@
 import * as fs from 'fs'
 import * as path from 'path'
+import * as yaml from 'yaml'
 import { getFormattedDate } from './utils'
 
 const workspacePath = process.cwd()
@@ -15,10 +16,13 @@ if (!fs.existsSync(logsDir)) {
 const appStartTimestamp = getFormattedDate()
 
 /**
- * Logs an error message to a JSON file in the logs directory.
+ * Logs an error message to a YAML file in the logs directory.
  * @param message - The error message or string to log.
  */
-export const logAppEvents = (message: Error | string) => {
+export const logAppEvents = (
+  message: Error | string,
+  writeToConsole: boolean = true
+) => {
   const timestamp = new Date().toISOString()
 
   const logEntry = {
@@ -27,17 +31,18 @@ export const logAppEvents = (message: Error | string) => {
     message: message instanceof Error ? message.message : message,
   }
 
-  console.log(logEntry)
+  if (writeToConsole) console.log(logEntry)
 
-  const logFilePath = path.join(logsDir, `${appStartTimestamp}.json`)
+  const logFilePath = path.join(logsDir, `${appStartTimestamp}.yaml`)
 
-  let logData = []
+  let logData: { timestamp: string; name: string; message: string }[] = []
   if (fs.existsSync(logFilePath)) {
     const existingData = fs.readFileSync(logFilePath, 'utf-8')
-    logData = JSON.parse(existingData)
+    const parsedData = yaml.parse(existingData)
+    logData = Array.isArray(parsedData) ? parsedData : []
   }
 
   logData.push(logEntry)
 
-  fs.writeFileSync(logFilePath, JSON.stringify(logData, null, 2), 'utf-8')
+  fs.writeFileSync(logFilePath, yaml.stringify(logData), 'utf-8')
 }
