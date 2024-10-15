@@ -1,8 +1,8 @@
-import { NodeId } from "node-opcua"
-import { OPCUAClientWrapper } from "./runtime"
-import { ExpressServer } from "./server"
-import { getAppEnvironment, getSelectedEndpoint } from "./utils"
-import { logAppEvents } from "./utils/logger"
+import { NodeId } from 'node-opcua'
+import { OPCUAClientWrapper } from './runtime'
+import { ExpressServer } from './server'
+import { getAppEnvironment, getSelectedEndpoint } from './utils'
+import { logAppEvents } from './utils/logger'
 
 logAppEvents(`Application is started in ${getAppEnvironment()} environment`)
 const expressServer = new ExpressServer(4020)
@@ -22,10 +22,12 @@ const opcuaClientWrapper = new OPCUAClientWrapper(endpointURL)
   }
 })()
 
-opcuaClientWrapper.on("Connected", async () => {
-  await opcuaClientWrapper.monitorItem(new NodeId(NodeId.NodeIdType.STRING, "Temperature", 1))
+opcuaClientWrapper.on('Connected', async () => {
+  await opcuaClientWrapper.monitorItem(
+    new NodeId(NodeId.NodeIdType.STRING, 'Temperature', 1)
+  )
 })
 
-opcuaClientWrapper.on("DataChanged", (value) => {
-  expressServer.emitEvent("temperature", value)
+opcuaClientWrapper.on('DataChanged', (value) => {
+  expressServer.emitEvent('temperature', value)
 })

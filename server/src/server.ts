@@ -1,10 +1,10 @@
-import { instrument } from "@socket.io/admin-ui"
-import type { Application, Request, Response } from "express"
-import express from "express"
-import http, { Server as HttpServer } from "http"
-import { Server as SocketIOServer } from "socket.io"
-import { socketLogger, expressLogger } from "./middlewares"
-import { logAppEvents } from "./utils/logger"
+import { instrument } from '@socket.io/admin-ui'
+import type { Application, Request, Response } from 'express'
+import express from 'express'
+import http, { Server as HttpServer } from 'http'
+import { Server as SocketIOServer } from 'socket.io'
+import { socketLogger, expressLogger } from './middlewares'
+import { logAppEvents } from './utils/logger'
 
 /**
  * ExpressServer class sets up and manages an Express application with integrated Socket.IO server.
@@ -35,7 +35,7 @@ export class ExpressServer {
     //#region Setup socket
     this.io = new SocketIOServer(this.server, {
       cors: {
-        origin: ["https://admin.socket.io", "http://localhost:5173"],
+        origin: ['https://admin.socket.io', 'http://localhost:5173'],
         credentials: true,
       },
     })
@@ -59,8 +59,8 @@ export class ExpressServer {
    * @returns {void}
    */
   private setupRoutes(): void {
-    this.app.get("/", (req: Request, res: Response) => {
-      res.json({ message: "Hello, World!" })
+    this.app.get('/', (req: Request, res: Response) => {
+      res.json({ message: 'Hello, World!' })
     })
   }
 

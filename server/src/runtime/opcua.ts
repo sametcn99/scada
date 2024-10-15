@@ -1,9 +1,22 @@
-import { EventEmitter } from "events"
-import type { ClientSession, ClientSubscription, MonitoringParametersOptions, ReadValueIdOptions } from "node-opcua"
-import { AttributeIds, DataValue, MessageSecurityMode, NodeId, OPCUAClient, SecurityPolicy, TimestampsToReturn } from "node-opcua"
-import ora from "ora"
-import { withTimeout } from "../utils"
-import { logAppEvents } from "../utils/logger"
+import { EventEmitter } from 'events'
+import type {
+  ClientSession,
+  ClientSubscription,
+  MonitoringParametersOptions,
+  ReadValueIdOptions,
+} from 'node-opcua'
+import {
+  AttributeIds,
+  DataValue,
+  MessageSecurityMode,
+  NodeId,
+  OPCUAClient,
+  SecurityPolicy,
+  TimestampsToReturn,
+} from 'node-opcua'
+import ora from 'ora'
+import { withTimeout } from '../utils'
+import { logAppEvents } from '../utils/logger'
 
 /**
  * A wrapper class for OPC UA Client that extends EventEmitter.
@@ -39,7 +52,10 @@ export class OPCUAClientWrapper extends EventEmitter {
   emit<K extends keyof Events>(eventName: K, payload?: Events[K]): boolean {
     return super.emit(eventName, payload)
   }
-  on<K extends keyof Events>(eventName: K, listener: (payload: Events[K]) => void): this {
+  on<K extends keyof Events>(
+    eventName: K,
+    listener: (payload: Events[K]) => void
+  ): this {
     return super.on(eventName, listener)
   }
   // #endregion
@@ -58,21 +74,25 @@ export class OPCUAClientWrapper extends EventEmitter {
    * ```
    */
   public async connect() {
-    const spinner = ora("Connecting to OPC server...").start()
+    const spinner = ora('Connecting to OPC server...').start()
     try {
-      spinner.text = "Connecting to OPC server...\n" + "Endpoint: " + this.endpointUrl
+      spinner.text =
+        'Connecting to OPC server...\n' + 'Endpoint: ' + this.endpointUrl
 
       // Establish connection
-      const isConnected = await withTimeout(() => this.client.connect(this.endpointUrl), 3000)
+      const isConnected = await withTimeout(
+        () => this.client.connect(this.endpointUrl),
+        3000
+      )
       if (!isConnected) {
-        spinner.fail("Connection failed or timed out." + this.endpointUrl)
+        spinner.fail('Connection failed or timed out.' + this.endpointUrl)
         process.exit(1)
       }
-      spinner.succeed("Connection successful.\n" + this.client)
+      spinner.succeed('Connection successful.\n' + this.client)
 
       // Create session
       this.session = await this.client.createSession()
-      spinner.succeed("Session successfully created." + this.session)
+      spinner.succeed('Session successfully created.' + this.session)
 
       // We call the createSubscription2 method to create a subscription in the OPC UA client.
       // This method creates a subscription with specific parameters, and this subscription is used to receive data changes from the server at a specific publishing interval.
@@ -85,21 +105,21 @@ export class OPCUAClientWrapper extends EventEmitter {
         priority: 10, // Helps the server prioritize among multiple subscriptions
       })
 
-      this.subscription.on("started", () => {
-        console.log("Subscription started")
+      this.subscription.on('started', () => {
+        console.log('Subscription started')
       })
-      this.subscription.on("keepalive", () => {
-        console.log("keepalive")
+      this.subscription.on('keepalive', () => {
+        console.log('keepalive')
       })
-      this.subscription.on("terminated", () => {
-        console.log("TERMINATED ------------------------------>")
+      this.subscription.on('terminated', () => {
+        console.log('TERMINATED ------------------------------>')
       })
 
-      this.emit("Connected")
+      this.emit('Connected')
     } catch (err) {
       logAppEvents(err as Error)
       await this.client.disconnect()
-      this.emit("Error", err as Error)
+      this.emit('Error', err as Error)
     }
   }
   // #endregion
@@ -113,7 +133,7 @@ export class OPCUAClientWrapper extends EventEmitter {
    * When a change is detected, it emits an `OPCUAEvents.DataChanged` event with the new value.
    */
   public async monitorItem(nodeId: NodeId) {
-    if (!this.subscription) throw new Error("Subscription is not initialized.")
+    if (!this.subscription) throw new Error('Subscription is not initialized.')
 
     const itemToMonitor: ReadValueIdOptions = {
       nodeId: nodeId, // The unique identifier of the item to be monitored. This identifier represents a specific node in the OPC UA server.
@@ -126,11 +146,15 @@ export class OPCUAClientWrapper extends EventEmitter {
       queueSize: 100, // Specifies the maximum size of the queue. In this example, the queue size is set to 100.
     }
 
-    const monitoredItem = await this.subscription.monitor(itemToMonitor, requestedParameters, TimestampsToReturn.Both)
+    const monitoredItem = await this.subscription.monitor(
+      itemToMonitor,
+      requestedParameters,
+      TimestampsToReturn.Both
+    )
 
-    monitoredItem.on("changed", (dataValue: DataValue) => {
+    monitoredItem.on('changed', (dataValue: DataValue) => {
       const value = dataValue.value.toString()
-      this.emit("DataChanged", value)
+      this.emit('DataChanged', value)
     })
   }
   // #endregion
@@ -147,8 +171,8 @@ export class OPCUAClientWrapper extends EventEmitter {
   public async disconnect() {
     if (this.session) await this.session.close()
     await this.client.disconnect()
-    logAppEvents("Successfully disconnected.")
-    this.emit("Disconnected")
+    logAppEvents('Successfully disconnected.')
+    this.emit('Disconnected')
   }
   // #endregion
 
@@ -157,12 +181,14 @@ export class OPCUAClientWrapper extends EventEmitter {
    * This method will keep trying to reconnect at a specified interval until successful.
    */
   private async reconnect() {
-    logAppEvents(`Attempting to reconnect in ${this.reconnectInterval / 1000} seconds...`)
+    logAppEvents(
+      `Attempting to reconnect in ${this.reconnectInterval / 1000} seconds...`
+    )
     setTimeout(async () => {
       try {
         await this.connect()
       } catch (err) {
-        logAppEvents("Reconnection attempt failed: " + err)
+        logAppEvents('Reconnection attempt failed: ' + err)
         this.reconnect() // Retry reconnection if it fails
       }
     }, this.reconnectInterval)

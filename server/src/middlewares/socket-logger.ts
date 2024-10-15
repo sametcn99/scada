@@ -1,5 +1,5 @@
-import { Server } from "socket.io"
-import { logAppEvents } from "../utils/logger"
+import { Server } from 'socket.io'
+import { logAppEvents } from '../utils/logger'
 
 /**
  * Middleware function to log socket events.
@@ -19,14 +19,14 @@ import { logAppEvents } from "../utils/logger"
  * ```
  */
 export const socketLogger = (io: Server) => {
-  io.on("connection", (socket) => {
+  io.on('connection', (socket) => {
     logAppEvents(`A user connected: ${socket.id}`)
 
-    socket.on("disconnect", () => {
+    socket.on('disconnect', () => {
       logAppEvents(`User disconnected: ${socket.id}`)
     })
 
-    socket.on("error", (err) => {
+    socket.on('error', (err) => {
       logAppEvents(err as Error)
     })
   })

@@ -1,2 +1,2 @@
-export * from "./get-endpoint";
-export * from "./utils";
+export * from './get-endpoint'
+export * from './utils'

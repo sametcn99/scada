@@ -1,6 +1,6 @@
-import inquirer from "inquirer"
-import type { Answers } from "inquirer"
-import os from "os"
+import inquirer from 'inquirer'
+import type { Answers } from 'inquirer'
+import os from 'os'
 
 /** Example OPC UA server endpoints:
  * opc.tcp://SAMETC:26543/Matrikon.OPC.Simulation.1
@@ -29,63 +29,66 @@ export async function getSelectedEndpoint(): Promise<string> {
   let selectedEndpoint // The selected OPC UA endpoint URL
   const answers = await inquirer.prompt([
     {
-      type: "list",
-      name: "endpointType",
-      message: "Select an OPC UA server endpoint type:",
-      choices: ["Local", "Custom"],
+      type: 'list',
+      name: 'endpointType',
+      message: 'Select an OPC UA server endpoint type:',
+      choices: ['Local', 'Custom'],
     },
     {
-      type: "input",
-      name: "host",
+      type: 'input',
+      name: 'host',
       message: `Enter the host name`,
       default: hostname,
-      when: (answers: Answers) => answers.endpointType === "Local",
+      when: (answers: Answers) => answers.endpointType === 'Local',
       validate: (input: string) => {
-        return input ? true : "Please enter a valid host."
+        return input ? true : 'Please enter a valid host.'
       },
     },
     {
-      type: "input",
-      name: "port",
-      default: "26543",
-      message: "Enter the port:",
-      when: (answers: Answers) => answers.endpointType === "Local",
+      type: 'input',
+      name: 'port',
+      default: '26543',
+      message: 'Enter the port:',
+      when: (answers: Answers) => answers.endpointType === 'Local',
       validate: (input: string) => {
         const portPattern = /^[0-9]+$/
         if (portPattern.test(input)) {
           return true
         } else {
-          return "Please enter a valid port number."
+          return 'Please enter a valid port number.'
         }
       },
     },
     {
-      type: "input",
-      name: "path",
-      message: "Enter the path (e.g., /Matrikon.OPC.Simulation.1):",
-      default: "/",
-      when: (answers: Answers) => answers.endpointType === "Local",
+      type: 'input',
+      name: 'path',
+      message: 'Enter the path (e.g., /Matrikon.OPC.Simulation.1):',
+      default: '/',
+      when: (answers: Answers) => answers.endpointType === 'Local',
       validate: (input: string) => {
-        return input.startsWith("/") ? true : "Path should start with a '/'."
+        return input.startsWith('/') ? true : "Path should start with a '/'."
       },
     },
     {
-      type: "input",
-      name: "customEndpoint",
-      message: "Enter your custom OPC UA endpoint URL (e.g., opc.tcp://<hostname>:<port>/<path>):",
-      when: (answers: Answers) => answers.endpointType === "Custom",
+      type: 'input',
+      name: 'customEndpoint',
+      message:
+        'Enter your custom OPC UA endpoint URL (e.g., opc.tcp://<hostname>:<port>/<path>):',
+      when: (answers: Answers) => answers.endpointType === 'Custom',
       validate: (input: string) => {
-        return urlPattern.test(input) ? true : "Please enter a valid OPC UA endpoint URL (e.g., opc.tcp://hostname:port/path)."
+        return urlPattern.test(input)
+          ? true
+          : 'Please enter a valid OPC UA endpoint URL (e.g., opc.tcp://hostname:port/path).'
       },
     },
   ])
 
-  if (answers.endpointType === "Local") {
+  if (answers.endpointType === 'Local') {
     selectedEndpoint = `opc.tcp://${answers.host}:${answers.port}${answers.path}`
     if (!urlPattern.test(selectedEndpoint)) {
-      console.error("Invalid OPC UA URL format.")
+      console.error('Invalid OPC UA URL format.')
     }
-  } else if (answers.endpointType === "Custom") {
+  } else if (answers.endpointType === 'Custom') {
     selectedEndpoint = answers.customEndpoint
   } else {
     selectedEndpoint = answers.endpointType

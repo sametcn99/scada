@@ -1,1 +1,1 @@
-export * from "./opcua"
+export * from './opcua'
