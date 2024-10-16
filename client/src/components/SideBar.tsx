@@ -1,4 +1,3 @@
-import React from 'react'
 import {
   CSidebar,
   CSidebarHeader,
@@ -10,12 +9,7 @@ import {
   CNavGroup,
   CSidebarToggler,
 } from '@coreui/react'
-import {
-  cilSpeedometer,
-  cilPuzzle,
-  cilCloudDownload,
-  cilLayers,
-} from '@coreui/icons'
+import { cilSpeedometer, cilPuzzle, cilCloudDownload, cilLayers } from '@coreui/icons'
 import { CIcon } from '@coreui/icons-react'
 export default function SideBar() {
   return (

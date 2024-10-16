@@ -49,7 +49,7 @@ export const logAppEvents = (
         break
     }
   }
-  
+
   const logFilePath = path.join(logsDir, `${appStartTimestamp}.yaml`)
 
   let logData: { name: string; timestamp: string; message: string }[] = []

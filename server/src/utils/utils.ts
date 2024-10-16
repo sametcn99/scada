@@ -13,9 +13,7 @@ export const withTimeout = async <T>(
   try {
     await Promise.race([
       asyncFunc(),
-      new Promise<T>((_, reject) =>
-        setTimeout(() => reject(new Error('Operation timed out')), timeout)
-      ),
+      new Promise<T>((_, reject) => setTimeout(() => reject(new Error('Operation timed out')), timeout)),
     ])
     return true // Return true if the async function completes successfully
   } catch {
@@ -46,9 +44,7 @@ export function getFormattedDate(): string {
 export const getAppEnvironment = (): string => {
   const env = process.env.NODE_ENV
   if (!env) {
-    throw new Error(
-      `NODE_ENV is undefined. Please set the environment variable.`
-    )
+    throw new Error(`NODE_ENV is undefined. Please set the environment variable.`)
   }
   return env
 }

@@ -5,5 +5,6 @@
   "singleQuote": true,
   "plugins": ["prettier-plugin-tailwindcss"],
   "jsxSingleQuote": true,
-  "quoteProps": "as-needed"
+  "quoteProps": "as-needed",
+  "printWidth": 110
 }

@@ -11,9 +11,7 @@ export default function TemperatureChart() {
       <h1 className='mb-4 text-3xl font-bold'>Last 25 Temperature</h1>
 
       {/* Show error if exists */}
-      {error && (
-        <div className='mb-4 font-semibold text-red-600'>Error: {error}</div>
-      )}
+      {error && <div className='mb-4 font-semibold text-red-600'>Error: {error}</div>}
 
       {!error && (
         <div className='w-full max-w-3xl'>

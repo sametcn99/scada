@@ -64,10 +64,7 @@ export class OPCUAClientWrapper extends EventEmitter {
   emit<K extends keyof Events>(eventName: K, payload?: Events[K]): boolean {
     return super.emit(eventName, payload)
   }
-  on<K extends keyof Events>(
-    eventName: K,
-    listener: (payload: Events[K]) => void
-  ): this {
+  on<K extends keyof Events>(eventName: K, listener: (payload: Events[K]) => void): this {
     return super.on(eventName, listener)
   }
   // #endregion
@@ -88,20 +85,13 @@ export class OPCUAClientWrapper extends EventEmitter {
   public async connect() {
     const spinner = ora('Connecting to OPC server...').start()
     try {
-      spinner.text =
-        'Connecting to OPC server...\n' + 'Endpoint: ' + this.endpointUrl
+      spinner.text = 'Connecting to OPC server...\n' + 'Endpoint: ' + this.endpointUrl
 
       // Establish connection
-      const isConnected = await withTimeout(
-        () => this.client.connect(this.endpointUrl),
-        5000
-      )
+      const isConnected = await withTimeout(() => this.client.connect(this.endpointUrl), 5000)
       if (!isConnected) {
         spinner.fail('Connection failed or timed out.' + this.endpointUrl)
-        logAppEvents(
-          'Error',
-          'Connection failed or timed out.' + this.endpointUrl
-        )
+        logAppEvents('Error', 'Connection failed or timed out.' + this.endpointUrl)
         process.exit(1)
       }
       spinner.succeed('Connection successful.\n' + this.client)
@@ -196,10 +186,7 @@ export class OPCUAClientWrapper extends EventEmitter {
    * This method will keep trying to reconnect at a specified interval until successful.
    */
   private async reconnect() {
-    logAppEvents(
-      'Message',
-      `Attempting to reconnect in ${this.reconnectInterval / 1000} seconds...`
-    )
+    logAppEvents('Message', `Attempting to reconnect in ${this.reconnectInterval / 1000} seconds...`)
     setTimeout(async () => {
       try {
         await this.connect()

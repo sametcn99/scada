@@ -4,5 +4,6 @@
   "semi": false,
   "singleQuote": true,
   "jsxSingleQuote": true,
-  "quoteProps": "as-needed"
+  "quoteProps": "as-needed",
+  "printWidth": 110
 }

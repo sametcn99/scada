@@ -47,8 +47,8 @@ export async function getSelectedEndpoint(): Promise<string> {
     {
       type: 'input',
       name: 'port',
-      default: '26543',
-      message: 'Enter the port:',
+      default: '53530',
+      message: 'Enter the port: ',
       when: (answers: Answers) => answers.endpointType === 'Local',
       validate: (input: string) => {
         const portPattern = /^[0-9]+$/
@@ -62,8 +62,8 @@ export async function getSelectedEndpoint(): Promise<string> {
     {
       type: 'input',
       name: 'path',
-      message: 'Enter the path (e.g., /Matrikon.OPC.Simulation.1):',
-      default: '/',
+      message: 'Enter the path:',
+      default: '/OPCUA/SimulationServer',
       when: (answers: Answers) => answers.endpointType === 'Local',
       validate: (input: string) => {
         return input.startsWith('/') ? true : "Path should start with a '/'."
@@ -72,8 +72,7 @@ export async function getSelectedEndpoint(): Promise<string> {
     {
       type: 'input',
       name: 'customEndpoint',
-      message:
-        'Enter your custom OPC UA endpoint URL (e.g., opc.tcp://<hostname>:<port>/<path>):',
+      message: 'Enter your custom OPC UA endpoint URL (e.g., opc.tcp://<hostname>:<port>/<path>):',
       when: (answers: Answers) => answers.endpointType === 'Custom',
       validate: (input: string) => {
         return urlPattern.test(input)
@@ -85,9 +84,7 @@ export async function getSelectedEndpoint(): Promise<string> {
 
   if (answers.endpointType === 'Local') {
     selectedEndpoint = `opc.tcp://${answers.host}:${answers.port}${answers.path}`
-    if (!urlPattern.test(selectedEndpoint)) {
-      console.error('Invalid OPC UA URL format.')
-    }
+    if (!urlPattern.test(selectedEndpoint)) console.error('Invalid OPC UA URL format.')
   } else if (answers.endpointType === 'Custom') {
     selectedEndpoint = answers.customEndpoint
   } else {

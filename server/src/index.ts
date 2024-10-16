@@ -1,18 +1,14 @@
 import { NodeId } from 'node-opcua'
 import { OPCUAClientWrapper } from './runtime'
 import { ExpressServer } from './server'
-import { getAppEnvironment } from './utils'
+import { getAppEnvironment, getSelectedEndpoint } from './utils'
 import { logAppEvents } from './utils/logger'
 
-logAppEvents(
-  'Message',
-  `Application is started in ${getAppEnvironment()} environment`
-)
+logAppEvents('Message', `Application is started in ${getAppEnvironment()} environment`)
 const expressServer = new ExpressServer(4020)
 
-// const endpointURL = await getSelectedEndpoint()
-// logAppEvents('Message', `Selected endpoint: ${endpointURL}`)
-const endpointURL = 'opc.tcp://sametc:53530/OPCUA/SimulationServer'
+const endpointURL = await getSelectedEndpoint()
+logAppEvents('Message', `Selected endpoint: ${endpointURL}`)
 
 const opcuaClientWrapper = new OPCUAClientWrapper(endpointURL)
 
@@ -35,9 +31,7 @@ opcuaClientWrapper.on('Connected', async () => {
    * The NodeId constructor takes three arguments: the identifier type, the value, and the namespace index.
    * The NodeIdType enum defines the possible identifier types: NUMERIC, STRING, GUID, BYTESTRING.
    */
-  await opcuaClientWrapper.monitorItem(
-    new NodeId(NodeId.NodeIdType.NUMERIC, '1001', 3)
-  )
+  await opcuaClientWrapper.monitorItem(new NodeId(NodeId.NodeIdType.NUMERIC, '1001', 3))
 })
 
 opcuaClientWrapper.on('DataChanged', (value) => {

@@ -2,7 +2,7 @@ import TemperatureChart from '../components/TemperatureChart'
 
 function App() {
   return (
-    <main >
+    <main>
       <TemperatureChart />
     </main>
   )

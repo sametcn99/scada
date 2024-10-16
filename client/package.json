@@ -8,7 +8,8 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "start": "npm run build && npm run preview"
+    "start": "npm run build && npm run preview",
+    "format": "prettier --write src/**/*.tsx"
   },
   "dependencies": {
     "@coreui/coreui": "^5.1.2",

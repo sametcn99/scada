@@ -7,11 +7,7 @@ import { logAppEvents } from '../utils/logger'
  * @param res - The response object.
  * @param next - The next middleware function in the stack.
  */
-export const expressLogger = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
+export const expressLogger = (req: Request, res: Response, next: NextFunction) => {
   const method = req.method
   const url = req.url
   const userAgent = req.headers['user-agent']
