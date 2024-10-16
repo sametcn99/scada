@@ -42,8 +42,20 @@ export class OPCUAClientWrapper extends EventEmitter {
     this.client = OPCUAClient.create({
       securityMode: MessageSecurityMode.None,
       securityPolicy: SecurityPolicy.None,
-      endpointMustExist: false, // Determines whether the endpoint must exist in the LDS
+      endpointMustExist: true, // Determines whether the endpoint must exist in the LDS
       keepSessionAlive: true,
+      /**
+       * The transportTimeout parameter specifies the timeout in milliseconds for the transport layer.
+       * The transport layer is responsible for sending and receiving messages between the client and the server.
+       * If the transport layer does not receive a response from the server within the specified timeout, it will raise an error.
+       * The default value is 10000 milliseconds (10 seconds).
+       * In this example, we set the transportTimeout to Number.MAX_SAFE_INTEGER to disable the timeout.
+       * This means that the transport layer will wait indefinitely for a response from the server.
+       * This is useful when working with slow or unreliable networks where the response time may vary.
+       *
+       * @see https://node-opcua.github.io/api_doc/2.132.0/interfaces/node_opcua_client.node_opcua_client.OPCUAClientOptions.html#transportTimeout
+       */
+      transportTimeout: Number.MAX_SAFE_INTEGER,
     })
     this.endpointUrl = endpointUrl
   }
@@ -82,10 +94,14 @@ export class OPCUAClientWrapper extends EventEmitter {
       // Establish connection
       const isConnected = await withTimeout(
         () => this.client.connect(this.endpointUrl),
-        3000
+        5000
       )
       if (!isConnected) {
         spinner.fail('Connection failed or timed out.' + this.endpointUrl)
+        logAppEvents(
+          'Error',
+          'Connection failed or timed out.' + this.endpointUrl
+        )
         process.exit(1)
       }
       spinner.succeed('Connection successful.\n' + this.client)
@@ -100,9 +116,6 @@ export class OPCUAClientWrapper extends EventEmitter {
       // This method creates a subscription with specific parameters, and this subscription is used to receive data changes from the server at a specific publishing interval.
       this.subscription = await this.session.createSubscription2({
         requestedPublishingInterval: 1000, // Publishing interval in ms
-        requestedLifetimeCount: 120, // Reasonable lifetime count
-        requestedMaxKeepAliveCount: 20, // Reasonable keep-alive count
-        maxNotificationsPerPublish: 100, // Maximum number of notifications per publishing cycle
         publishingEnabled: true, // Determines whether the subscription is publishing enabled
         priority: 10, // Helps the server prioritize among multiple subscriptions
       })

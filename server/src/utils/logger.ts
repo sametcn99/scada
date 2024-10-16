@@ -30,7 +30,7 @@ export const logAppEvents = (
     message: message instanceof Error ? message.message : message,
   }
 
-  if (writeToConsole)
+  if (writeToConsole) {
     switch (name) {
       case 'Error':
         console.error(logEntry)
@@ -48,7 +48,8 @@ export const logAppEvents = (
         console.log(logEntry)
         break
     }
-
+  }
+  
   const logFilePath = path.join(logsDir, `${appStartTimestamp}.yaml`)
 
   let logData: { name: string; timestamp: string; message: string }[] = []

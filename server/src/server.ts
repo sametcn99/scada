@@ -45,7 +45,6 @@ export class ExpressServer {
     // #endregion
 
     this.setupRoutes()
-    // this.setupWebSocketEvents()
     socketLogger(this.io)
   }
 
