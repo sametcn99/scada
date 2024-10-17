@@ -1,14 +1,21 @@
 import { CChart } from '@coreui/react-chartjs'
-import { useTemperatureSocket } from '../hooks/useTemperatureSocket'
+import { useSocket } from '../hooks/useSocket'
 import { getAverage } from '../utils/utils'
 
-export default function TemperatureChart({ nodeId }: { nodeId: string }) {
-  const { data, error } = useTemperatureSocket(nodeId)
-  const currentTemperature = data.length ? data[data.length - 1] : 'N/A'
+export default function CustomChart({ nodeId }: { nodeId: string }) {
+  const { data, error } = useSocket(nodeId)
+
+  // Debugging: Log data to ensure it's being received correctly
+  console.log('Received data:', data)
+
+  const currentTemperature = data.length ? data[data.length - 1].value : 'N/A'
+
+  const _data = data.map((item) => item.value)
 
   return (
     <div className='flex max-w-[30rem] flex-col items-center justify-center rounded-lg bg-black/40 shadow-lg'>
       <h1 className='text-3xl font-bold'>Last 25 Data</h1>
+      <h2>Type: {data.length ? data[0].type : 'N/A'}</h2>
 
       {/* Show error if exists */}
       {error && <div className='mb-4 font-semibold text-red-600'>Error: {error}</div>}
@@ -25,7 +32,7 @@ export default function TemperatureChart({ nodeId }: { nodeId: string }) {
                 borderColor: 'rgba(75,192,192,1)',
                 pointBackgroundColor: 'rgba(75,192,192,1)',
                 pointBorderColor: '#fff',
-                data,
+                data: _data, // Corrected property name
               },
             ],
           }}
@@ -34,8 +41,8 @@ export default function TemperatureChart({ nodeId }: { nodeId: string }) {
 
       {/* Display average and current temperature */}
       <div className='text-white'>
-        <p>Average: {getAverage(data)}°C</p>
-        <p>Current: {Number(currentTemperature).toFixed(2)}°C</p>
+        <p>Average: {getAverage(data)}°C</p> {/* Use getAverage function */}
+        <p>Current: {currentTemperature}°C</p> {/* Display currentTemperature directly */}
       </div>
     </div>
   )

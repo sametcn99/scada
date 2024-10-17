@@ -1,19 +1,25 @@
 import Add from '../components/Add'
-import TemperatureChart from '../components/TemperatureChart'
+import CustomChart from '../components/CustomChart'
 import { useItemContext } from '../hooks/useItemContext'
 
 function App() {
   const { items } = useItemContext()
+
+  console.log('Items:', items) // Log the items array
+
   return (
     <main className='flex flex-col place-items-center gap-4'>
       <div className='className= flex flex-row place-items-center justify-center gap-4'>
         {items.length > 0 &&
-          items.map((item, index) => (
-            <TemperatureChart
-              key={index}
-              nodeId={item}
-            />
-          ))}
+          items.map((item, index) => {
+            console.log('Rendering item:', item) // Log each item
+            return (
+              <CustomChart
+                key={index}
+                nodeId={item}
+              />
+            )
+          })}
       </div>
       <Add />
     </main>
