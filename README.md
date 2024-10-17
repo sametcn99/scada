@@ -4,6 +4,10 @@ This project was created using `bun init` with Bun v1.1.20. [Bun](https://bun.sh
 
 To get started, you need to install the Bun.js runtime.
 
+```bash
+npm install -g bun
+```
+
 ## Install Dependencies
 
 Install the required dependencies for both the client and server projects.
