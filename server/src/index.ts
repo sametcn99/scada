@@ -10,6 +10,10 @@ const { opcuaClientWrapper, expressServer } = serviceContainer
   try {
     await opcuaClientWrapper.connect()
     expressServer.start()
+
+    opcuaClientWrapper.on('DataChanged', ({ nodeId, value }) => {
+      expressServer.emitEvent(nodeId.toString(), value)
+    })
   } catch (error) {
     logAppEvents('Error', error as Error)
   }

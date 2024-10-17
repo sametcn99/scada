@@ -25,17 +25,17 @@ export const useSocket = (nodeId: string) => {
 
   useEffect(() => {
     if (socket) {
-      socket.on(iValue, handleNewData)
+      socket.on(nodeId, handleNewData)
       socket.on('connect_error', handleConnectionError)
     }
 
     return () => {
       if (socket) {
-        socket.off(iValue, handleNewData)
+        socket.off(nodeId, handleNewData)
         socket.off('connect_error', handleConnectionError)
       }
     }
-  }, [socket, handleNewData, handleConnectionError, iValue])
+  }, [socket, handleNewData, handleConnectionError, nodeId])
 
   return { data, error }
 }

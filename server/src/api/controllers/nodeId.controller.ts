@@ -1,11 +1,12 @@
 import type { Request, Response } from 'express'
 import { coerceNodeId } from 'node-opcua'
 import { serviceContainer } from '../../services'
+import { logAppEvents } from '../../utils/logger'
 
 export class NodeIdController {
   async handleNodeId(req: Request, res: Response): Promise<void> {
     const { nodeId } = req.body
-    const { opcuaClientWrapper, expressServer } = serviceContainer
+    const { opcuaClientWrapper } = serviceContainer
 
     if (!nodeId) {
       res.status(400).json({ error: 'nodeId is required' })
@@ -22,10 +23,8 @@ export class NodeIdController {
 
     await opcuaClientWrapper.monitorItem(validNodeId)
 
-    opcuaClientWrapper.on('DataChanged', (value) => {
-      expressServer.emitEvent(validNodeId.value.toString(), value)
-    })
-
-    res.json(validNodeId)
+    const totalMonitoredItems = opcuaClientWrapper.getTotalMonitoredItems()
+    logAppEvents('Info', `Total monitored items: ${totalMonitoredItems}`)
+    res.json({ validNodeId, totalMonitoredItems })
   }
 }
