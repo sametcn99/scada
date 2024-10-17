@@ -1,14 +1,7 @@
 import { useState, useCallback } from 'react'
 import { SupportedDataTypes } from '../lib/supported-data-types'
 
-const MAX_DATA_POINTS = 25
-
-type DataType = {
-  type: string
-  value: number
-}
-
-export const useData = () => {
+export const useData = (nodeId: string) => {
   const [data, setData] = useState<DataType[]>([])
   const [totalDataCount, setTotalDataCount] = useState(0)
 
@@ -38,20 +31,19 @@ export const useData = () => {
       }
 
       const result: DataType = {
+        nodeId: nodeId,
         type: `Scalar<${type}>`,
         value: value,
       }
 
       setData((prevData) => {
-        const updatedData = [...prevData, result]
-        console.log('updatedData:', updatedData)
-        return updatedData.slice(-MAX_DATA_POINTS)
+        return [...prevData, result]
       })
       setTotalDataCount((prevCount) => prevCount + 1)
     } else {
       console.error('Invalid format')
     }
-  }, [])
+  }, [nodeId])
 
   return { data, totalDataCount, handleNewData }
 }

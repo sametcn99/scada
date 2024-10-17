@@ -5,7 +5,7 @@ import { useData } from './useData'
 const SOCKET_URL = 'http://localhost:4020'
 
 export const useSocket = (nodeId: string) => {
-  const { data, totalDataCount, handleNewData } = useData()
+  const { data, totalDataCount, handleNewData } = useData(nodeId)
   const [error, setError] = useState<string | null>(null)
   const [iValue, setIValue] = useState('')
 
