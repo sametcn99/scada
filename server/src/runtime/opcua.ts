@@ -21,10 +21,10 @@ import { logAppEvents } from '../utils/logger'
 import os from 'os'
 
 interface Events {
-  DataChanged: { nodeId: NodeId; value: string };
-  Connected: void;
-  Error: Error;
-  Disconnected: void;
+  DataChanged: { nodeId: NodeId; value: string }
+  Connected: void
+  Error: Error
+  Disconnected: void
 }
 
 /**
@@ -117,11 +117,11 @@ export class OPCUAClientWrapper extends EventEmitter {
         queueSize: 100,
       }
 
-      const monitoredItem = await this.subscription.monitor(
+      const monitoredItem = (await this.subscription.monitor(
         itemToMonitor,
         requestedParameters,
         TimestampsToReturn.Both
-      ) as ClientMonitoredItem
+      )) as ClientMonitoredItem
 
       this.monitoredItems.set(nodeId, monitoredItem) // Add the monitored item to the map
       logAppEvents('Info', `Monitoring item: ${nodeId}`)
