@@ -1,5 +1,5 @@
 import type { NextFunction, Request, Response } from 'express'
-import { logAppEvents } from '../utils/logger'
+import { logAppEvents } from '../../utils/logger'
 
 /**
  * Middleware function for logging HTTP requests and responses.

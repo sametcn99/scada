@@ -3,8 +3,10 @@ import type { Application, Request, Response } from 'express'
 import express from 'express'
 import http, { Server as HttpServer } from 'http'
 import { Server as SocketIOServer } from 'socket.io'
-import { socketLogger, expressLogger } from './middlewares'
+import { socketLogger, expressLogger } from './api/middlewares'
 import { logAppEvents } from './utils/logger'
+import { NodeIdController } from './api/controllers/nodeId.controller'
+import cors from 'cors'
 
 /**
  * ExpressServer class sets up and manages an Express application with integrated Socket.IO server.
@@ -29,6 +31,12 @@ export class ExpressServer {
     this.app.use(expressLogger) // Middleware to log http requests
     this.app.use(express.json()) // Middleware to parse JSON bodies
     this.app.use(express.urlencoded({ extended: true })) // Middleware to parse URL-encoded bodies
+    this.app.use(
+      cors({
+        origin: ['https://admin.socket.io', 'http://localhost:5173'],
+        credentials: true,
+      })
+    )
     this.port = port
     this.server = http.createServer(this.app)
 
@@ -58,6 +66,13 @@ export class ExpressServer {
    * @returns {void}
    */
   private setupRoutes(): void {
+    const basePath = process.env.BASE_PATH || '/api'
+    const router = express.Router()
+    const nodeId = new NodeIdController()
+    router.route('/nodeId').post(nodeId.handleNodeId)
+
+    this.app.use(basePath, router)
+
     this.app.get('/', (req: Request, res: Response) => {
       res.json({ message: 'Hello, World!' })
     })

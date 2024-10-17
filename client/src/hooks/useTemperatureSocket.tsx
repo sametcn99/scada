@@ -4,10 +4,21 @@ import { io, Socket } from 'socket.io-client'
 const SOCKET_URL = 'http://localhost:4020'
 const MAX_DATA_POINTS = 25
 
-export const useTemperatureSocket = () => {
+export const useTemperatureSocket = (nodeId: string) => {
   const [totalDataCount, setTotalDataCount] = useState(0)
   const [data, setData] = useState<number[]>([])
   const [error, setError] = useState<string | null>(null)
+  const [iValue, setIValue] = useState('')
+
+  useEffect(() => {
+    const value =
+      nodeId
+        .split(';')
+        .find((part) => part.startsWith('i='))
+        ?.split('=')[1] || ''
+    setIValue(value)
+    console.log('iValue:', iValue)
+  }, [iValue, nodeId])
 
   useEffect(() => {
     console.log('totalDataCount:', totalDataCount)
@@ -32,13 +43,12 @@ export const useTemperatureSocket = () => {
 
   useEffect(() => {
     const socket: Socket = io(SOCKET_URL)
-
-    socket.on('Temperature', handleNewTemperatureData)
+    socket.on(iValue, handleNewTemperatureData)
     socket.on('connect_error', handleConnectionError)
     return () => {
       socket.disconnect()
     }
-  }, [handleNewTemperatureData, handleConnectionError])
+  }, [handleNewTemperatureData, handleConnectionError, iValue])
 
   return { data, error }
 }

@@ -19,7 +19,7 @@ export default function Navbar() {
     <CNavbar
       expand='lg'
       colorScheme='dark'
-      className='bg-dark'
+      className='bg-dark mb-2'
     >
       <CContainer fluid>
         <CNavbarBrand

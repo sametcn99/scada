@@ -5,18 +5,21 @@ import './index.css'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import Layout from './components/Layout.tsx'
 import '@coreui/coreui/dist/css/coreui.min.css'
+import { ItemProvider } from './context/itemContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <Layout>
-        <Routes>
-          <Route
-            path='/'
-            element={<App />}
-          />
-        </Routes>
-      </Layout>
+      <ItemProvider>
+        <Layout>
+          <Routes>
+            <Route
+              path='/'
+              element={<App />}
+            />
+          </Routes>
+        </Layout>
+      </ItemProvider>
     </BrowserRouter>
   </StrictMode>
 )

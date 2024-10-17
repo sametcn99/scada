@@ -17,6 +17,7 @@ import {
 import ora from 'ora'
 import { withTimeout } from '../utils'
 import { logAppEvents } from '../utils/logger'
+import os from 'os'
 
 /**
  * A wrapper class for OPC UA Client that extends EventEmitter.
@@ -24,21 +25,18 @@ import { logAppEvents } from '../utils/logger'
  *
  * @class OPCUAClientWrapper
  * @extends EventEmitter
- *
- * @example
- * const opcuaClient = new OPCUAClientWrapper("opc.tcp://localhost:4840");
- * await opcuaClient.connect();
- * await opcuaClient.monitorItem("ns=1;s=Temperature");
  */
 export class OPCUAClientWrapper extends EventEmitter {
   private client: OPCUAClient
-  private endpointUrl: string
+  private endpointUrl: string =
+    process.env.OPC_SERVER_ENDPOINT || `opc.tcp://${os.hostname()}:53530/OPCUA/SimulationServer`
+
   private session: ClientSession | undefined
   private subscription: ClientSubscription | undefined
   private reconnectInterval = 5000
 
-  constructor(endpointUrl: string) {
-    super() // Call the parent class constructor
+  constructor() {
+    super() // Call the parent class(EventMitter) constructor
     this.client = OPCUAClient.create({
       securityMode: MessageSecurityMode.None,
       securityPolicy: SecurityPolicy.None,
@@ -57,7 +55,6 @@ export class OPCUAClientWrapper extends EventEmitter {
        */
       transportTimeout: Number.MAX_SAFE_INTEGER,
     })
-    this.endpointUrl = endpointUrl
   }
 
   // #region EventEmitter methods override for type safety and better intellisense
@@ -75,12 +72,6 @@ export class OPCUAClientWrapper extends EventEmitter {
    *
    * @emits OPCUAEvents.Connected - When the connection is successfully established.
    * @emits OPCUAEvents.Error - When an error occurs during the connection process.
-   *
-   * @example
-   * ```typescript
-   * const opcuaClient = new OPCUAClient();
-   * await opcuaClient.connect();
-   * ```
    */
   public async connect() {
     const spinner = ora('Connecting to OPC server...').start()
@@ -110,15 +101,15 @@ export class OPCUAClientWrapper extends EventEmitter {
         priority: 10, // Helps the server prioritize among multiple subscriptions
       })
 
-      this.subscription.on('started', () => {
-        console.log('Subscription started')
-      })
-      this.subscription.on('keepalive', () => {
-        console.log('keepalive')
-      })
-      this.subscription.on('terminated', () => {
-        console.log('TERMINATED ------------------------------>')
-      })
+      // this.subscription.on('started', () => {
+      //   console.log('Subscription started')
+      // })
+      // this.subscription.on('keepalive', () => {
+      //   console.log('keepalive')
+      // })
+      // this.subscription.on('terminated', () => {
+      //   console.log('TERMINATED ------------------------------>')
+      // })
 
       this.emit('Connected')
     } catch (err) {
@@ -138,29 +129,36 @@ export class OPCUAClientWrapper extends EventEmitter {
    * When a change is detected, it emits an `OPCUAEvents.DataChanged` event with the new value.
    */
   public async monitorItem(nodeId: NodeId) {
-    if (!this.subscription) throw new Error('Subscription is not initialized.')
+    try {
+      if (!this.subscription) throw new Error('Subscription is not initialized.')
 
-    const itemToMonitor: ReadValueIdOptions = {
-      nodeId: nodeId, // The unique identifier of the item to be monitored. This identifier represents a specific node in the OPC UA server.
-      attributeId: AttributeIds.Value, // Specifies which attribute of the item to monitor. This indicates that the value attribute of the item will be monitored.
+      const itemToMonitor: ReadValueIdOptions = {
+        nodeId: nodeId, // The unique identifier of the item to be monitored. This identifier represents a specific node in the OPC UA server.
+        attributeId: AttributeIds.Value, // Specifies which attribute of the item to monitor. This indicates that the value attribute of the item will be monitored.
+      }
+
+      const requestedParameters: MonitoringParametersOptions = {
+        samplingInterval: 100, // Specifies the sampling interval in milliseconds. In this example, it is set to 100 milliseconds.
+        discardOldest: true, // Determines whether the oldest items should be discarded when the queue is full. true: The oldest items will be discarded when the queue is full.
+        queueSize: 100, // Specifies the maximum size of the queue. In this example, the queue size is set to 100.
+      }
+
+      const monitoredItem = await this.subscription.monitor(
+        itemToMonitor,
+        requestedParameters,
+        TimestampsToReturn.Both
+      )
+
+      logAppEvents('Info', `Monitoring item: ${nodeId}`)
+
+      monitoredItem.on('changed', (dataValue: DataValue) => {
+        const value = dataValue.value.toString()
+        this.emit('DataChanged', value)
+      })
+    } catch (error) {
+      logAppEvents('Error', error as Error)
+      this.emit('Error', error as Error)
     }
-
-    const requestedParameters: MonitoringParametersOptions = {
-      samplingInterval: 100, // Specifies the sampling interval in milliseconds. In this example, it is set to 100 milliseconds.
-      discardOldest: true, // Determines whether the oldest items should be discarded when the queue is full. true: The oldest items will be discarded when the queue is full.
-      queueSize: 100, // Specifies the maximum size of the queue. In this example, the queue size is set to 100.
-    }
-
-    const monitoredItem = await this.subscription.monitor(
-      itemToMonitor,
-      requestedParameters,
-      TimestampsToReturn.Both
-    )
-
-    monitoredItem.on('changed', (dataValue: DataValue) => {
-      const value = dataValue.value.toString()
-      this.emit('DataChanged', value)
-    })
   }
   // #endregion
 

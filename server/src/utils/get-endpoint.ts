@@ -2,13 +2,6 @@ import inquirer from 'inquirer'
 import type { Answers } from 'inquirer'
 import os from 'os'
 
-/** Example OPC UA server endpoints:
- * opc.tcp://SAMETC:26543/Matrikon.OPC.Simulation.1
- * opc.tcp://SAMETC:26543/opcserversim.instance.1
- * opc.tcp://SAMETC:26543
- * opc.tcp://opcuademo.sterfive.com:26543/UA/SampleServer
- */
-
 /**
  * Prompts the user to select an OPC UA server endpoint type and returns the selected endpoint URL.
  *
@@ -16,12 +9,6 @@ import os from 'os'
  * Depending on the user's choice, it will either construct a local OPC UA endpoint URL or use a custom endpoint URL provided by the user.
  *
  * @returns {Promise<string>} A promise that resolves to the selected OPC UA endpoint URL.
- *
- * @example
- * ```typescript
- * const endpoint = await getSelectedEndpoint();
- * console.log(endpoint); // Outputs the selected OPC UA endpoint URL
- * ```
  */
 export async function getSelectedEndpoint(): Promise<string> {
   const urlPattern = /^(opc\.tcp:\/\/[^\s]+(:\d+)?\/[^\s]*)$/ // Regular expression to validate the OPC UA endpoint URL format
@@ -85,11 +72,8 @@ export async function getSelectedEndpoint(): Promise<string> {
   if (answers.endpointType === 'Local') {
     selectedEndpoint = `opc.tcp://${answers.host}:${answers.port}${answers.path}`
     if (!urlPattern.test(selectedEndpoint)) console.error('Invalid OPC UA URL format.')
-  } else if (answers.endpointType === 'Custom') {
-    selectedEndpoint = answers.customEndpoint
-  } else {
-    selectedEndpoint = answers.endpointType
-  }
+  } else if (answers.endpointType === 'Custom') selectedEndpoint = answers.customEndpoint
+  else selectedEndpoint = answers.endpointType
 
   return selectedEndpoint
 }
