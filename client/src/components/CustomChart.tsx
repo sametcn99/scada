@@ -5,17 +5,16 @@ import { getAverage } from '../utils/utils'
 export default function CustomChart({ nodeId }: { nodeId: string }) {
   const { data, error } = useSocket(nodeId)
 
-  // Debugging: Log data to ensure it's being received correctly
-  console.log('Received data:', data)
+  const filteredData = data.filter((item) => item.nodeId === nodeId)
 
-  const currentTemperature = data.length ? data[data.length - 1].value : 'N/A'
+  const currentTemperature = filteredData.length ? filteredData[filteredData.length - 1].value : 'N/A'
 
-  const _data = data.map((item) => item.value)
+  const _data = filteredData.map((item) => item.value)
 
   return (
     <div className='flex max-w-[30rem] flex-col items-center justify-center rounded-lg bg-black/40 shadow-lg'>
       <h1 className='text-3xl font-bold'>Last 25 Data</h1>
-      <h2>Type: {data.length ? data[0].type : 'N/A'}</h2>
+      <h2>Type: {filteredData.length ? filteredData[0].type : 'N/A'}</h2>
 
       {/* Show error if exists */}
       {error && <div className='mb-4 font-semibold text-red-600'>Error: {error}</div>}
@@ -24,7 +23,7 @@ export default function CustomChart({ nodeId }: { nodeId: string }) {
         <CChart
           type='line'
           data={{
-            labels: data.map((_, index) => `${index + 1}`),
+            labels: filteredData.map((_, index) => `${index + 1}`),
             datasets: [
               {
                 label: 'Data',
@@ -41,7 +40,7 @@ export default function CustomChart({ nodeId }: { nodeId: string }) {
 
       {/* Display average and current temperature */}
       <div className='text-white'>
-        <p>Average: {getAverage(data)}°C</p> {/* Use getAverage function */}
+        <p>Average: {getAverage(filteredData)}°C</p> {/* Use getAverage function */}
         <p>Current: {currentTemperature}°C</p> {/* Display currentTemperature directly */}
       </div>
     </div>

@@ -1,11 +1,10 @@
 import { useEffect, useState, useCallback } from 'react'
-import { io, Socket } from 'socket.io-client'
 import { useData } from './useData'
-
-const SOCKET_URL = 'http://localhost:4020'
+import { useSocketContext } from './useSocketContext'
 
 export const useSocket = (nodeId: string) => {
-  const { data, totalDataCount, handleNewData } = useData(nodeId)
+  const { data, handleNewData } = useData(nodeId)
+  const { socket } = useSocketContext()
   const [error, setError] = useState<string | null>(null)
   const [iValue, setIValue] = useState('')
 
@@ -19,23 +18,24 @@ export const useSocket = (nodeId: string) => {
     console.log('iValue:', iValue)
   }, [iValue, nodeId])
 
-  useEffect(() => {
-    console.log('totalDataCount:', totalDataCount)
-  }, [totalDataCount])
-
   const handleConnectionError = useCallback((error: Error) => {
     console.error('Socket.IO connection error:', error)
     setError(`Socket.IO connection error: ${error.message}`)
   }, [])
 
   useEffect(() => {
-    const socket: Socket = io(SOCKET_URL)
-    socket.on(iValue, handleNewData)
-    socket.on('connect_error', handleConnectionError)
-    return () => {
-      socket.disconnect()
+    if (socket) {
+      socket.on(iValue, handleNewData)
+      socket.on('connect_error', handleConnectionError)
     }
-  }, [handleNewData, handleConnectionError, iValue])
+
+    return () => {
+      if (socket) {
+        socket.off(iValue, handleNewData)
+        socket.off('connect_error', handleConnectionError)
+      }
+    }
+  }, [socket, handleNewData, handleConnectionError, iValue])
 
   return { data, error }
 }

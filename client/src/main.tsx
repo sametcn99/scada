@@ -6,20 +6,23 @@ import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import MainLayout from './layouts/MainLayout.tsx'
 import '@coreui/coreui/dist/css/coreui.min.css'
 import { ItemProvider } from './context/itemContext.tsx'
+import { SocketProvider } from './context/socketContext.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <BrowserRouter>
-      <ItemProvider>
-        <MainLayout>
-          <Routes>
-            <Route
-              path='/'
-              element={<App />}
-            />
-          </Routes>
-        </MainLayout>
-      </ItemProvider>
+      <SocketProvider>
+        <ItemProvider>
+          <MainLayout>
+            <Routes>
+              <Route
+                path='/'
+                element={<App />}
+              />
+            </Routes>
+          </MainLayout>
+        </ItemProvider>
+      </SocketProvider>
     </BrowserRouter>
   </StrictMode>
 )
