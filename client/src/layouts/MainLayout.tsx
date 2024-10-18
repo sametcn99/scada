@@ -1,5 +1,4 @@
 import Navbar from '../components/Navbar'
-
 import { ReactNode } from 'react'
 
 interface LayoutProps {
@@ -8,7 +7,7 @@ interface LayoutProps {
 
 export default function MainLayout({ children }: LayoutProps) {
   return (
-    <section className='min-h-screen w-full bg-zinc-900'>
+    <section className='min-h-screen w-full bg-zinc-300'>
       <Navbar />
       {children}
     </section>

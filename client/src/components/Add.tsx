@@ -1,15 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react'
-import {
-  CButton,
-  CForm,
-  CFormInput,
-  CModal,
-  CModalBody,
-  CModalFooter,
-  CModalHeader,
-  CModalTitle,
-  CAlert,
-} from '@coreui/react'
+import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Alert } from '@mui/material'
 import { useItemContext } from '../hooks/useItemContext'
 
 const API_URL = 'http://localhost:4020'
@@ -42,7 +32,6 @@ export default function Add() {
         if (!response.ok) throw new Error(data.error)
         addItem(itemName)
         setModalVisible(false)
-        console.log('Item added:', data)
       } catch (error) {
         setErrorMessage('Error adding item: ' + error)
         setItemName('')
@@ -61,46 +50,49 @@ export default function Add() {
 
   return (
     <>
-      <CButton
+      <Button
+        variant='contained'
         color='primary'
         onClick={() => setModalVisible(true)}
       >
         Add New Item
-      </CButton>
-      <CModal
-        visible={modalVisible}
+      </Button>
+      <Dialog
+        open={modalVisible}
         onClose={() => setModalVisible(false)}
       >
-        <CForm onSubmit={handleSubmit}>
-          <CModalHeader>
-            <CModalTitle>Add Item</CModalTitle>
-          </CModalHeader>
-          <CModalBody>
-            {errorMessage && <CAlert color='danger'>{errorMessage}</CAlert>}
-            <CFormInput
+        <form onSubmit={handleSubmit}>
+          <DialogTitle>Add Item</DialogTitle>
+          <DialogContent>
+            {errorMessage && <Alert severity='error'>{errorMessage}</Alert>}
+            <TextField
+              autoFocus
+              margin='dense'
+              label='Node ID'
               type='text'
-              label='Item Name'
+              fullWidth
+              variant='outlined'
               placeholder='ns=3;i=1001'
               value={itemName}
               onChange={(e) => setItemName(e.target.value)}
             />
-          </CModalBody>
-          <CModalFooter>
-            <CButton
+          </DialogContent>
+          <DialogActions>
+            <Button
               color='secondary'
               onClick={() => setModalVisible(false)}
             >
               Close
-            </CButton>
-            <CButton
+            </Button>
+            <Button
               color='primary'
               type='submit'
             >
               Add
-            </CButton>
-          </CModalFooter>
-        </CForm>
-      </CModal>
+            </Button>
+          </DialogActions>
+        </form>
+      </Dialog>
     </>
   )
 }

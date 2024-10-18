@@ -1,6 +1,7 @@
-import { CChart } from '@coreui/react-chartjs'
+import { Card } from '@mui/material'
 import { useSocket } from '../hooks/useSocket'
 import { getAverage } from '../utils/utils'
+import { LineChart } from '@mui/x-charts'
 
 export default function CustomChart({ nodeId }: { nodeId: string }) {
   const { data, error } = useSocket(nodeId)
@@ -12,27 +13,31 @@ export default function CustomChart({ nodeId }: { nodeId: string }) {
   const _data = filteredData.map((item) => item.value)
 
   return (
-    <div className='flex min-h-44 max-w-[30rem] flex-col items-center justify-center rounded-lg bg-black/40 shadow-lg'>
+    <Card
+      sx={{
+        p: 2,
+        m: 2,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        justifyContent: 'center',
+      }}
+    >
       {error && <div className='mx-10 mb-4 text-wrap font-semibold text-red-600'>{error}</div>}
-      {!error && (
+      {data.length > 0 && !error && (
         <>
           <h1 className='text-3xl font-bold'>Last 25 Data</h1>
           <h2>Type: {filteredData.length ? filteredData[0].type : 'N/A'}</h2>
-          <CChart
-            type='line'
-            data={{
-              labels: filteredData.map((_, index) => `${index + 1}`),
-              datasets: [
-                {
-                  label: 'Data',
-                  backgroundColor: 'rgba(75,192,192,0.2)',
-                  borderColor: 'rgba(75,192,192,1)',
-                  pointBackgroundColor: 'rgba(75,192,192,1)',
-                  pointBorderColor: '#fff',
-                  data: _data, // Corrected property name
-                },
-              ],
-            }}
+          <LineChart
+            xAxis={[{ data: filteredData.map((_, index) => `${index + 1}`) }]}
+            series={[
+              {
+                data: _data,
+                label: 'Data',
+              },
+            ]}
+            width={500}
+            height={300}
           />
           {/* Display average and current temperature */}
           <div className='text-white'>
@@ -41,6 +46,6 @@ export default function CustomChart({ nodeId }: { nodeId: string }) {
           </div>
         </>
       )}
-    </div>
+    </Card>
   )
 }
