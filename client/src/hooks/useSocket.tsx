@@ -4,7 +4,7 @@ import { useSocketContext } from './useSocketContext'
 
 export const useSocket = (nodeId: string) => {
   const { data, handleNewData } = useData(nodeId)
-  const { socket } = useSocketContext()
+  const { socket, isConnected } = useSocketContext()
   const [error, setError] = useState<string | null>(null)
   const [iValue, setIValue] = useState('')
 
@@ -37,5 +37,5 @@ export const useSocket = (nodeId: string) => {
     }
   }, [socket, handleNewData, handleConnectionError, nodeId])
 
-  return { data, error }
+  return { data, error, isConnected }
 }

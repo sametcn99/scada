@@ -1,8 +1,7 @@
 import React, { useEffect, useState, useCallback } from 'react'
 import { Button, TextField, Dialog, DialogActions, DialogContent, DialogTitle, Alert } from '@mui/material'
 import { useItemContext } from '../hooks/useItemContext'
-
-const API_URL = 'http://localhost:4020'
+import { API_URL } from '../config'
 
 export default function Add() {
   const [modalVisible, setModalVisible] = useState<boolean>(false)
@@ -19,11 +18,10 @@ export default function Add() {
 
       setErrorMessage(null)
 
-      const url = new URL(API_URL)
-      url.pathname = '/api/nodeId'
+      API_URL.pathname = '/api/nodeId'
 
       try {
-        const response = await fetch(url.toString(), {
+        const response = await fetch(API_URL.toString(), {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

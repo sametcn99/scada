@@ -1,4 +1,5 @@
 import React, { createContext, useState, ReactNode, useEffect } from 'react'
+import { API_URL } from '../config'
 
 // Define the type for the context value
 interface ItemContextType {
@@ -19,7 +20,8 @@ const ItemProvider: React.FC<{ children: ReactNode }> = ({ children }) => {
     const fetchItems = async () => {
       setLoading(true)
       try {
-        const response = await fetch('http://localhost:4020/api/nodeId', {
+        API_URL.pathname = '/api/nodeId'
+        const response = await fetch(API_URL, {
           method: 'GET',
           headers: {
             'Content-Type': 'application/json',
