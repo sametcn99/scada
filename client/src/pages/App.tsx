@@ -7,7 +7,7 @@ function App() {
 
   return (
     <main className='flex flex-col place-items-center gap-4'>
-      <div className='className= flex flex-row place-items-center justify-center gap-4'>
+      <div className='className= flex flex-row flex-wrap place-items-center justify-center gap-4'>
         {items.length > 0 &&
           items.map((item, index) => {
             return (

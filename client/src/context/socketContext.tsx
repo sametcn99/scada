@@ -12,7 +12,7 @@ const SocketContext = createContext<SocketContextProps>({ socket: null, message:
 
 export const SocketProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [socket, setSocket] = useState<Socket | null>(null)
-  const [message, setMessage] = useState<string>('')
+  const [message, setMessage] = useState<string>('Trying to connect to socket...')
 
   useEffect(() => {
     const socketInstance: Socket = io(SOCKET_URL)

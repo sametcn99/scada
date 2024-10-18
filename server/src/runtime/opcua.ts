@@ -142,8 +142,8 @@ export class OPCUAClientWrapper extends EventEmitter {
   }
 
   // Method to get the total number of monitored items
-  public getTotalMonitoredItems(): number {
-    return this.monitoredItems.size
+  public getTotalMonitoredItems(): Map<NodeId, ClientMonitoredItem> {
+    return this.monitoredItems
   }
   // #endregion
 

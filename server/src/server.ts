@@ -33,7 +33,7 @@ export class ExpressServer {
     this.app.use(express.urlencoded({ extended: true })) // Middleware to parse URL-encoded bodies
     this.app.use(
       cors({
-        origin: ['https://admin.socket.io', 'http://localhost:5173'],
+        origin: ['https://admin.socket.io', 'http://localhost:5173', 'http://localhost:4173'],
         credentials: true,
       })
     )
@@ -43,7 +43,7 @@ export class ExpressServer {
     //#region Setup socket
     this.io = new SocketIOServer(this.server, {
       cors: {
-        origin: ['https://admin.socket.io', 'http://localhost:5173'],
+        origin: ['https://admin.socket.io', 'http://localhost:5173', 'http://localhost:4173'],
         credentials: true,
       },
     })

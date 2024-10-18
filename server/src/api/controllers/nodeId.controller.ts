@@ -24,7 +24,7 @@ export class NodeIdController {
     await opcuaClientWrapper.monitorItem(validNodeId)
 
     const totalMonitoredItems = opcuaClientWrapper.getTotalMonitoredItems()
-    logAppEvents('Info', `Total monitored items: ${totalMonitoredItems}`)
-    res.json({ validNodeId, totalMonitoredItems })
+    logAppEvents('Info', `Total monitored items: ${Array.from(totalMonitoredItems.keys())}`)
+    res.json({ validNodeId, totalMonitoredItems: Array.from(totalMonitoredItems.keys()) })
   }
 }

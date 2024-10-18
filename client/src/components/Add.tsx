@@ -8,10 +8,12 @@ export default function Add() {
   const [modalVisible, setModalVisible] = useState<boolean>(false)
   const [itemName, setItemName] = useState<string>('')
   const [errorMessage, setErrorMessage] = useState<string | null>(null)
+  const [loading, setLoading] = useState<boolean>(false)
   const { addItem } = useItemContext()
 
   const handleSubmit = useCallback(
     async (e: React.FormEvent) => {
+      setLoading(true)
       e.preventDefault()
       if (!itemName) return
 
@@ -36,6 +38,8 @@ export default function Add() {
         setErrorMessage('Error adding item: ' + error)
         setItemName('')
         console.error('Error adding item:', error)
+      } finally {
+        setLoading(false)
       }
     },
     [itemName, addItem]
@@ -81,12 +85,14 @@ export default function Add() {
             <Button
               color='secondary'
               onClick={() => setModalVisible(false)}
+              disabled={loading}
             >
               Close
             </Button>
             <Button
               color='primary'
               type='submit'
+              disabled={loading}
             >
               Add
             </Button>
