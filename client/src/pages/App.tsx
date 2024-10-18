@@ -1,14 +1,22 @@
+import { CircularProgress } from '@mui/material'
 import Add from '../components/Add'
 import CustomChart from '../components/CustomChart'
 import { useItemContext } from '../hooks/useItemContext'
 
 function App() {
-  const { items } = useItemContext()
+  const { items, loading } = useItemContext()
 
   return (
     <main className='flex flex-col place-items-center gap-4'>
       <div className='className= flex flex-row flex-wrap place-items-center justify-center gap-4'>
-        {items.length > 0 &&
+        {loading && (
+          <div className='flex flex-col place-items-center justify-center py-4'>
+            <CircularProgress />
+            <p>Checking items...</p>
+          </div>
+        )}
+        {!loading &&
+          items &&
           items.map((item, index) => {
             return (
               <CustomChart
@@ -18,7 +26,7 @@ function App() {
             )
           })}
       </div>
-      <Add />
+      {!loading && <Add />}
     </main>
   )
 }

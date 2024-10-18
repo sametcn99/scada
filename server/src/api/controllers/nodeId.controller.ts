@@ -27,4 +27,11 @@ export class NodeIdController {
     logAppEvents('Info', `Total monitored items: ${Array.from(totalMonitoredItems.keys())}`)
     res.json({ validNodeId, totalMonitoredItems: Array.from(totalMonitoredItems.keys()) })
   }
+
+  async handleGetMonitoredItems(req: Request, res: Response): Promise<void> {
+    const { opcuaClientWrapper } = serviceContainer
+    const totalMonitoredItems = opcuaClientWrapper.getTotalMonitoredItems()
+    logAppEvents('Info', `Total monitored items: ${Array.from(totalMonitoredItems.keys())}`)
+    res.json({ totalMonitoredItems: Array.from(totalMonitoredItems.keys()) })
+  }
 }

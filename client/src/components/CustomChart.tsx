@@ -26,8 +26,8 @@ export default function CustomChart({ nodeId }: { nodeId: string }) {
       {error && <div className='mx-10 mb-4 text-wrap font-semibold text-red-600'>{error}</div>}
       {data.length > 0 && !error && (
         <>
-          <h1 className='text-3xl font-bold'>Last 25 Data</h1>
-          <h2>Type: {filteredData.length ? filteredData[0].type : 'N/A'}</h2>
+          <h1 className='text-3xl font-bold'>{nodeId}</h1>
+          <h2 className='text-base'>Type: {filteredData.length ? filteredData[0].type : 'N/A'}</h2>
           <LineChart
             xAxis={[{ data: filteredData.map((_, index) => `${index + 1}`) }]}
             series={[

@@ -68,8 +68,9 @@ export class ExpressServer {
   private setupRoutes(): void {
     const basePath = process.env.BASE_PATH || '/api'
     const router = express.Router()
-    const nodeId = new NodeIdController()
-    router.route('/nodeId').post(nodeId.handleNodeId)
+    const nodeIdController = new NodeIdController()
+    router.route('/nodeId').post(nodeIdController.handleNodeId)
+    router.route('/nodeId').get(nodeIdController.handleGetMonitoredItems)
 
     this.app.use(basePath, router)
 
