@@ -64,6 +64,7 @@ export class OPCUAClientWrapper extends EventEmitter {
   }
   // #endregion
 
+  // #region Connection Methods
   // #region Connect method
   public async connect() {
     const spinner = ora('Connecting to OPC server...').start()
@@ -101,7 +102,31 @@ export class OPCUAClientWrapper extends EventEmitter {
   }
   // #endregion
 
-  // #region MonitorItem method
+  // #region Disconnect method
+  public async disconnect() {
+    if (this.session) await this.session.close()
+    await this.client.disconnect()
+    logAppEvents('Message', 'Successfully disconnected.')
+    this.emit('Disconnected')
+  }
+  // #endregion
+
+  // #region Reconnect method
+  private async reconnect() {
+    logAppEvents('Message', `Attempting to reconnect in ${this.reconnectInterval / 1000} seconds...`)
+    setTimeout(async () => {
+      try {
+        await this.connect()
+      } catch (err) {
+        logAppEvents('Error', 'Reconnection attempt failed: ' + err)
+        this.reconnect() // Retry reconnection if it fails
+      }
+    }, this.reconnectInterval)
+  }
+  // #endregion
+  //#endregion
+
+  // #region Monitoring Methods
   public async monitorItem(nodeId: NodeId) {
     try {
       if (!this.subscription) throw new Error('Subscription is not initialized.')
@@ -136,37 +161,33 @@ export class OPCUAClientWrapper extends EventEmitter {
     }
   }
 
-  // Method to get a monitored item by NodeId
   public getMonitoredItem(nodeId: NodeId): ClientMonitoredItem | undefined {
     return this.monitoredItems.get(nodeId)
   }
 
-  // Method to get the total number of monitored items
   public getTotalMonitoredItems(): Map<NodeId, ClientMonitoredItem> {
     return this.monitoredItems
   }
-  // #endregion
 
-  // #region Disconnect method
-  public async disconnect() {
-    if (this.session) await this.session.close()
-    await this.client.disconnect()
-    logAppEvents('Message', 'Successfully disconnected.')
-    this.emit('Disconnected')
-  }
-  // #endregion
-
-  // #region Reconnect method
-  private async reconnect() {
-    logAppEvents('Message', `Attempting to reconnect in ${this.reconnectInterval / 1000} seconds...`)
-    setTimeout(async () => {
-      try {
-        await this.connect()
-      } catch (err) {
-        logAppEvents('Error', 'Reconnection attempt failed: ' + err)
-        this.reconnect() // Retry reconnection if it fails
+  public async unmonitorItem(nodeId: NodeId) {
+    try {
+      const monitoredItem = this.monitoredItems.get(nodeId)
+      if (monitoredItem) {
+        await monitoredItem.terminate()
+        this.monitoredItems.delete(nodeId)
       }
-    }, this.reconnectInterval)
+    } catch (error) {
+      logAppEvents('Error', error as Error)
+      this.emit('Error', error as Error)
+    }
   }
   // #endregion
+
+  public async getInformation(): Promise<object> {
+    const client = this.client
+    const session = this.session
+    const subscription = this.subscription
+    const monitoredItems = this.monitoredItems
+    return { client, session, subscription, monitoredItems }
+  }
 }

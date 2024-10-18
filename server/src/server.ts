@@ -1,12 +1,12 @@
 import { instrument } from '@socket.io/admin-ui'
+import cors from 'cors'
 import type { Application, Request, Response } from 'express'
 import express from 'express'
 import http, { Server as HttpServer } from 'http'
 import { Server as SocketIOServer } from 'socket.io'
-import { socketLogger, expressLogger } from './api/middlewares'
-import { logAppEvents } from './utils/logger'
 import { NodeIdController } from './api/controllers/nodeId.controller'
-import cors from 'cors'
+import { expressLogger, socketLogger } from './api/middlewares'
+import { logAppEvents } from './utils/logger'
 
 /**
  * ExpressServer class sets up and manages an Express application with integrated Socket.IO server.
@@ -71,6 +71,7 @@ export class ExpressServer {
     const nodeIdController = new NodeIdController()
     router.route('/nodeId').post(nodeIdController.handleNodeId)
     router.route('/nodeId').get(nodeIdController.handleGetMonitoredItems)
+    router.route('/nodeId').delete(nodeIdController.handleUnmonitorItem)
 
     this.app.use(basePath, router)
 

@@ -1,6 +1,6 @@
-import { getAppEnvironment } from './utils'
-import { logAppEvents } from './utils/logger'
-import { serviceContainer } from './services'
+import { serviceContainer } from './services';
+import { getAppEnvironment } from './utils';
+import { logAppEvents } from './utils/logger';
 
 logAppEvents('Message', `Application is started in ${getAppEnvironment()} environment`)
 const { opcuaClientWrapper, expressServer } = serviceContainer
