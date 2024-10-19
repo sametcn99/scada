@@ -1,12 +1,12 @@
+import { NodeIdController } from '../api/controllers'
+import { expressLogger, socketLogger } from '../api/middlewares'
+import { logAppEvents } from '../utils/logger'
 import { instrument } from '@socket.io/admin-ui'
 import cors from 'cors'
 import type { Application, Request, Response } from 'express'
 import express from 'express'
 import http, { Server as HttpServer } from 'http'
 import { Server as SocketIOServer } from 'socket.io'
-import { NodeIdController } from './api/controllers/nodeId.controller'
-import { expressLogger, socketLogger } from './api/middlewares'
-import { logAppEvents } from './utils/logger'
 
 /**
  * ExpressServer class sets up and manages an Express application with integrated Socket.IO server.

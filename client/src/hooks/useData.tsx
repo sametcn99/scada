@@ -1,5 +1,5 @@
-import { useState, useCallback } from 'react'
 import { SupportedDataTypes } from '../lib/supported-data-types'
+import { useCallback, useState } from 'react'
 
 export const useData = (nodeId: string) => {
   const [data, setData] = useState<DataType[]>([])

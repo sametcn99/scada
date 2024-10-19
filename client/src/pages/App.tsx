@@ -1,7 +1,7 @@
-import { CircularProgress } from '@mui/material'
 import Add from '../components/Add'
 import CustomChart from '../components/CustomChart'
 import { useItemContext } from '../hooks/useItemContext'
+import { CircularProgress } from '@mui/material'
 
 function App() {
   const { items, loading } = useItemContext()

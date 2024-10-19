@@ -1,6 +1,6 @@
-import { useEffect, useState, useCallback } from 'react'
 import { useData } from './useData'
 import { useSocketContext } from './useSocketContext'
+import { useCallback, useEffect, useState } from 'react'
 
 export const useSocket = (nodeId: string) => {
   const { data, handleNewData } = useData(nodeId)

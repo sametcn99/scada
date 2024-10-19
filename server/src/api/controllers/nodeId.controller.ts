@@ -1,7 +1,7 @@
+import { serviceContainer } from '../../services/container'
+import { logAppEvents } from '../../utils/logger'
 import type { Request, Response } from 'express'
 import { coerceNodeId } from 'node-opcua'
-import { serviceContainer } from '../../services'
-import { logAppEvents } from '../../utils/logger'
 
 export class NodeIdController {
   async handleNodeId(req: Request, res: Response): Promise<void> {

@@ -1,3 +1,5 @@
+import { withTimeout } from '../../utils'
+import { logAppEvents } from '../../utils/logger'
 import { EventEmitter } from 'events'
 import type {
   ClientSession,
@@ -16,8 +18,6 @@ import {
   TimestampsToReturn,
 } from 'node-opcua'
 import ora from 'ora'
-import { withTimeout } from '../utils'
-import { logAppEvents } from '../utils/logger'
 import os from 'os'
 
 interface Events {

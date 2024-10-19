@@ -1,8 +1,8 @@
-import { ReactNode } from 'react'
-import { SocketProvider } from './context/socketContext'
 import { ItemProvider } from './context/itemContext'
-import { ThemeProvider } from '@mui/material'
+import { SocketProvider } from './context/socketContext'
 import theme from './theme'
+import { ThemeProvider } from '@mui/material'
+import { ReactNode } from 'react'
 
 export default function Providers({ children }: { children: ReactNode }) {
   return (

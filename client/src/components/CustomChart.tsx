@@ -1,6 +1,6 @@
-import { Card } from '@mui/material'
 import { useSocket } from '../hooks/useSocket'
 import { getAverage } from '../utils/utils'
+import { Card } from '@mui/material'
 import { LineChart } from '@mui/x-charts'
 
 export default function CustomChart({ nodeId }: { nodeId: string }) {

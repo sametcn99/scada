@@ -1,7 +1,7 @@
+import { getFormattedDate } from './utils'
 import * as fs from 'fs'
 import * as path from 'path'
 import * as yaml from 'yaml'
-import { getFormattedDate } from './utils'
 
 const workspacePath = process.cwd()
 const parentPath = path.dirname(workspacePath)

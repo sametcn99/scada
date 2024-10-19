@@ -1,5 +1,5 @@
-import { Server } from 'socket.io'
 import { logAppEvents } from '../../utils/logger'
+import { Server } from 'socket.io'
 
 /**
  * Middleware function to log socket events.
